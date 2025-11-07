@@ -1,0 +1,330 @@
+# Engagement Semantic Model
+# DAU/MAU, retention, stickiness, and cohort analysis
+
+model:
+  name: engagement
+  description: "User engagement metrics including DAU/MAU, retention, and cohort analysis"
+  # This model uses both events and users tables through derived queries
+
+dimensions:
+  - name: metric_date
+    type: date
+    description: "Date for time-series metrics"
+
+  - name: cohort_month
+    type: string
+    description: "Signup month cohort (YYYY-MM format)"
+
+  - name: analysis_period
+    type: string
+    description: "Time period for analysis (daily, weekly, monthly)"
+
+  - name: retention_day
+    type: integer
+    description: "Days since signup for retention analysis (1, 7, 30)"
+
+measures:
+  # Core engagement metrics
+  - name: dau
+    type: count_distinct
+    description: "Daily Active Users"
+    sql: |
+      COUNT(DISTINCT CASE
+        WHEN DATE(event_timestamp) = {metric_date}
+        THEN user_id
+      END)
+    time_grain: day
+
+  - name: wau
+    type: count_distinct
+    description: "Weekly Active Users"
+    sql: |
+      COUNT(DISTINCT CASE
+        WHEN event_timestamp >= {metric_date} - INTERVAL '6 days'
+        AND event_timestamp <= {metric_date}
+        THEN user_id
+      END)
+    time_grain: week
+
+  - name: mau
+    type: count_distinct
+    description: "Monthly Active Users"
+    sql: |
+      COUNT(DISTINCT CASE
+        WHEN event_timestamp >= DATE_TRUNC('month', {metric_date})
+        AND event_timestamp < DATE_TRUNC('month', {metric_date}) + INTERVAL '1 month'
+        THEN user_id
+      END)
+    time_grain: month
+
+  # Stickiness ratios
+  - name: daily_stickiness
+    type: ratio
+    numerator: dau
+    denominator: mau
+    description: "DAU/MAU ratio - how frequently users engage daily"
+    format: percentage
+
+  - name: weekly_stickiness
+    type: ratio
+    numerator: wau
+    denominator: mau
+    description: "WAU/MAU ratio - how frequently users engage weekly"
+    format: percentage
+
+  # Retention metrics
+  - name: d1_retention
+    type: custom
+    description: "Day 1 retention rate"
+    sql: |
+      COUNT(DISTINCT CASE
+        WHEN signup_cohort.signup_date = {cohort_date}
+        AND return_events.event_date = {cohort_date} + INTERVAL '1 day'
+        THEN signup_cohort.user_id
+      END) * 100.0 /
+      COUNT(DISTINCT signup_cohort.user_id)
+
+  - name: d7_retention
+    type: custom
+    description: "Day 7 retention rate"
+    sql: |
+      COUNT(DISTINCT CASE
+        WHEN signup_cohort.signup_date = {cohort_date}
+        AND return_events.event_date BETWEEN {cohort_date} + INTERVAL '1 day'
+        AND {cohort_date} + INTERVAL '7 days'
+        THEN signup_cohort.user_id
+      END) * 100.0 /
+      COUNT(DISTINCT signup_cohort.user_id)
+
+  - name: d30_retention
+    type: custom
+    description: "Day 30 retention rate"
+    sql: |
+      COUNT(DISTINCT CASE
+        WHEN signup_cohort.signup_date = {cohort_date}
+        AND return_events.event_date BETWEEN {cohort_date} + INTERVAL '1 day'
+        AND {cohort_date} + INTERVAL '30 days'
+        THEN signup_cohort.user_id
+      END) * 100.0 /
+      COUNT(DISTINCT signup_cohort.user_id)
+
+  # Cohort metrics
+  - name: cohort_size
+    type: count_distinct
+    description: "Number of users in signup cohort"
+    sql: |
+      COUNT(DISTINCT CASE
+        WHEN DATE_TRUNC('month', signup_date) = {cohort_month}
+        THEN user_id
+      END)
+
+  - name: active_cohort_users
+    type: count_distinct
+    description: "Active users from cohort in current period"
+    sql: |
+      COUNT(DISTINCT CASE
+        WHEN DATE_TRUNC('month', u.signup_date) = {cohort_month}
+        AND DATE(e.event_timestamp) = {metric_date}
+        THEN u.user_id
+      END)
+
+  - name: cohort_activity_rate
+    type: ratio
+    numerator: active_cohort_users
+    denominator: cohort_size
+    description: "Percentage of cohort active in current period"
+    format: percentage
+
+# Business context for engagement
+context:
+  benchmarks:
+    - metric: daily_stickiness
+      saas_median: 0.13
+      top_quartile: 0.25
+      excellent: 0.35
+      source: "SaaS engagement benchmarks 2024"
+
+    - metric: d1_retention
+      median: 0.25
+      top_quartile: 0.40
+      excellent: 0.60
+
+    - metric: d7_retention
+      median: 0.15
+      top_quartile: 0.25
+      excellent: 0.40
+
+    - metric: d30_retention
+      median: 0.08
+      top_quartile: 0.15
+      excellent: 0.25
+
+  interpretations:
+    daily_stickiness:
+      excellent: "> 35%"
+      good: "20-35%"
+      average: "10-20%"
+      concerning: "< 10%"
+
+    d7_retention:
+      excellent: "> 40%"
+      good: "25-40%"
+      average: "15-25%"
+      concerning: "< 15%"
+
+# Sample queries for testing
+sample_queries:
+  - description: "Daily active users trend (last 30 days)"
+    query: |
+      SELECT
+        DATE(event_timestamp) as date,
+        COUNT(DISTINCT user_id) as dau
+      FROM events
+      WHERE event_timestamp >= CURRENT_DATE - INTERVAL '30 days'
+      GROUP BY DATE(event_timestamp)
+      ORDER BY date
+
+  - description: "Monthly stickiness calculation"
+    query: |
+      WITH daily_users AS (
+        SELECT
+          DATE(event_timestamp) as date,
+          COUNT(DISTINCT user_id) as dau
+        FROM events
+        WHERE event_timestamp >= DATE_TRUNC('month', CURRENT_DATE)
+        GROUP BY DATE(event_timestamp)
+      ),
+      monthly_users AS (
+        SELECT COUNT(DISTINCT user_id) as mau
+        FROM events
+        WHERE event_timestamp >= DATE_TRUNC('month', CURRENT_DATE)
+      )
+      SELECT
+        AVG(d.dau) as avg_dau,
+        m.mau,
+        ROUND(AVG(d.dau) * 100.0 / m.mau, 1) as stickiness_pct
+      FROM daily_users d
+      CROSS JOIN monthly_users m
+
+  - description: "Cohort retention analysis"
+    query: |
+      WITH signup_cohorts AS (
+        SELECT
+          user_id,
+          DATE_TRUNC('month', signup_date) as cohort_month,
+          signup_date
+        FROM users
+        WHERE signup_date >= '2024-01-01'
+      ),
+      user_activity AS (
+        SELECT DISTINCT
+          user_id,
+          DATE(event_timestamp) as activity_date
+        FROM events
+        WHERE event_timestamp >= '2024-01-01'
+      )
+      SELECT
+        sc.cohort_month,
+        COUNT(DISTINCT sc.user_id) as cohort_size,
+        COUNT(DISTINCT CASE
+          WHEN ua.activity_date BETWEEN sc.signup_date + INTERVAL '1 day'
+          AND sc.signup_date + INTERVAL '7 days'
+          THEN sc.user_id
+        END) as d7_retained,
+        ROUND(COUNT(DISTINCT CASE
+          WHEN ua.activity_date BETWEEN sc.signup_date + INTERVAL '1 day'
+          AND sc.signup_date + INTERVAL '7 days'
+          THEN sc.user_id
+        END) * 100.0 / COUNT(DISTINCT sc.user_id), 1) as d7_retention_rate
+      FROM signup_cohorts sc
+      LEFT JOIN user_activity ua ON sc.user_id = ua.user_id
+      GROUP BY sc.cohort_month
+      ORDER BY sc.cohort_month
+
+  - description: "Engagement by plan type"
+    query: |
+      WITH user_engagement AS (
+        SELECT
+          u.user_id,
+          u.plan_type,
+          COUNT(DISTINCT DATE(e.event_timestamp)) as active_days_last_30
+        FROM users u
+        LEFT JOIN events e ON u.user_id = e.user_id
+        WHERE e.event_timestamp >= CURRENT_DATE - INTERVAL '30 days'
+        GROUP BY u.user_id, u.plan_type
+      )
+      SELECT
+        plan_type,
+        COUNT(*) as total_users,
+        COUNT(CASE WHEN active_days_last_30 > 0 THEN 1 END) as active_users,
+        ROUND(COUNT(CASE WHEN active_days_last_30 > 0 THEN 1 END) * 100.0 / COUNT(*), 1) as activation_rate,
+        ROUND(AVG(COALESCE(active_days_last_30, 0)), 1) as avg_active_days
+      FROM user_engagement
+      GROUP BY plan_type
+      ORDER BY avg_active_days DESC
+
+# Statistical validation
+validation:
+  engagement_patterns:
+    - check: "dau_trend"
+      test: "trend_analysis"
+      expectation: "positive or stable trend"
+      period: "last_30_days"
+
+    - check: "retention_by_plan"
+      test: "chi_square"
+      expectation: "paid plans have higher retention"
+      dimensions: ["plan_type"]
+      measure: "d7_retention"
+
+    - check: "cohort_performance"
+      test: "cohort_analysis"
+      expectation: "recent cohorts perform similarly to historical"
+      measure: "d7_retention"
+
+    - check: "stickiness_benchmark"
+      test: "benchmark_comparison"
+      expectation: "stickiness above industry median (13%)"
+      measure: "daily_stickiness"
+
+# Automated insights
+auto_insights:
+  - name: "engagement_health_check"
+    description: "Overall engagement health vs benchmarks"
+    measures: ["daily_stickiness", "d7_retention", "d30_retention"]
+    benchmark_comparison: true
+    alert_thresholds:
+      daily_stickiness: 0.10
+      d7_retention: 0.15
+      d30_retention: 0.08
+
+  - name: "cohort_trends"
+    description: "Compare retention across signup cohorts"
+    time_series: true
+    dimensions: ["cohort_month"]
+    measures: ["d7_retention", "d30_retention"]
+    trend_analysis: true
+
+  - name: "plan_engagement_comparison"
+    description: "Engagement differences by plan type"
+    dimensions: ["plan_type"]
+    measures: ["dau", "daily_stickiness", "d7_retention"]
+    statistical_test: true
+    expected_pattern: "enterprise > pro > starter > free"
+
+# Alerting rules
+alerts:
+  - name: "dau_drop"
+    condition: "dau decreases > 15% week over week"
+    severity: "high"
+    description: "Significant drop in daily active users"
+
+  - name: "retention_decline"
+    condition: "d7_retention < 0.15 for latest cohort"
+    severity: "medium"
+    description: "New user retention below acceptable threshold"
+
+  - name: "stickiness_low"
+    condition: "daily_stickiness < 0.10"
+    severity: "medium"
+    description: "User engagement frequency below industry standards"

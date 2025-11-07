@@ -1,0 +1,128 @@
+# Users Semantic Model
+# Following Rasmus's patterns for product analytics
+
+model:
+  name: users
+  description: "User demographics, signup information, and account details"
+  table: users
+
+dimensions:
+  - name: user_id
+    type: string
+    primary_key: true
+    description: "Unique user identifier"
+
+  - name: signup_date
+    type: date
+    description: "When user created their account"
+
+  - name: plan_type
+    type: string
+    description: "Subscription tier (free, starter, pro, enterprise)"
+
+  - name: industry
+    type: string
+    description: "Customer industry vertical"
+
+  - name: company_size
+    type: string
+    description: "Organization size (small, medium, large)"
+
+  - name: country
+    type: string
+    description: "User's country"
+
+measures:
+  - name: total_users
+    type: count_distinct
+    dimension: user_id
+    description: "Total unique users"
+
+  - name: free_users
+    type: count_distinct
+    dimension: user_id
+    filters:
+      - plan_type = 'free'
+    description: "Users on free plan"
+
+  - name: paid_users
+    type: count_distinct
+    dimension: user_id
+    filters:
+      - plan_type != 'free'
+    description: "Users on paid plans (starter, pro, enterprise)"
+
+  - name: enterprise_users
+    type: count_distinct
+    dimension: user_id
+    filters:
+      - plan_type = 'enterprise'
+    description: "Users on enterprise plan"
+
+  - name: conversion_rate
+    type: ratio
+    numerator: paid_users
+    denominator: total_users
+    description: "Percentage of users on paid plans"
+    format: percentage
+
+# Business context for AI interpretation
+context:
+  benchmarks:
+    - metric: conversion_rate
+      industry_median: 0.15
+      top_quartile: 0.35
+      source: "SaaS conversion benchmarks 2024"
+
+  interpretations:
+    conversion_rate:
+      excellent: "> 35%"
+      good: "20-35%"
+      average: "10-20%"
+      concerning: "< 10%"
+
+# Sample queries for testing
+sample_queries:
+  - description: "User distribution by plan type"
+    query: |
+      SELECT
+        plan_type,
+        COUNT(*) as user_count,
+        ROUND(100.0 * COUNT(*) / SUM(COUNT(*)) OVER (), 1) as percentage
+      FROM users
+      GROUP BY plan_type
+      ORDER BY user_count DESC
+
+  - description: "Signups by month"
+    query: |
+      SELECT
+        DATE_TRUNC('month', signup_date) as signup_month,
+        COUNT(*) as signups
+      FROM users
+      GROUP BY signup_month
+      ORDER BY signup_month
+
+  - description: "Industry distribution (top 5)"
+    query: |
+      SELECT
+        industry,
+        COUNT(*) as users,
+        COUNT(*) * 100.0 / SUM(COUNT(*)) OVER() as percentage
+      FROM users
+      GROUP BY industry
+      ORDER BY users DESC
+      LIMIT 5
+
+# Statistical validation rules
+validation:
+  sample_size:
+    minimum: 30
+    warning_threshold: 100
+
+  significance:
+    default_alpha: 0.05
+    auto_test_comparisons: true
+
+  effect_size:
+    calculate_cohens_h: true  # For proportion comparisons
+    calculate_relative_diff: true

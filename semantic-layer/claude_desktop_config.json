@@ -1,0 +1,17 @@
+{
+  "mcpServers": {
+    "ai-analyst": {
+      "command": "uv",
+      "args": [
+        "run",
+        "python",
+        "-m",
+        "mcp_server.server"
+      ],
+      "cwd": "/Users/mattstrautmann/Documents/github/claude-analyst/semantic-layer",
+      "env": {
+        "UV_PROJECT_ENVIRONMENT": "/Users/mattstrautmann/Documents/github/claude-analyst/semantic-layer/.venv"
+      }
+    }
+  }
+}

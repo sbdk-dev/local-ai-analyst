@@ -1,0 +1,501 @@
+organization_id,industry_type,industry,segment_size,segment_growth_potential
+org_45554,Consulting and Marketing,mercury_marketing,(1) micro,(1) low
+org_34718,E-commerce,mercury_retail_wholesale,(1) micro,(2) high
+org_20069,Consulting and Marketing,mercury_marketing,(1) micro,(1) low
+org_704,Consulting and Marketing,mercury_consulting_strategy,(1) micro,(1) low
+org_29265,E-commerce,mercury_retail_wholesale,(1) micro,(1) low
+org_31594,Consulting and Marketing,mercury_marketing,(1) micro,(2) high
+org_62469,Consulting and Marketing,mercury_marketing,(1) micro,(2) high
+org_10862,Technology,mercury_developer_tools,(1) micro,(2) high
+org_2735,Technology,mercury_b2b,(3) medium,(2) high
+org_18823,Technology,mercury_software,(1) micro,(2) high
+org_24461,E-commerce,shipping_warehousing,(1) micro,(1) low
+org_26465,Consulting and Marketing,mercury_consulting_strategy,(1) micro,(1) low
+org_25812,E-commerce,mercury_online_retailer_shopify,(1) micro,(1) low
+org_39615,Technology,mercury_software,(1) micro,(2) high
+org_17256,E-commerce,mercury_online_retailer_shopify,(1) micro,(1) low
+org_14327,E-commerce,mercury_online_retailer_amazon,(1) micro,(2) high
+org_9870,Technology,mercury_software,(1) micro,(2) high
+org_36828,Consulting and Marketing,mercury_marketing,(1) micro,(1) low
+org_28217,Consulting and Marketing,mercury_marketing,(1) micro,(1) low
+org_9547,Technology,mercury_b2b,(1) micro,(2) high
+org_53744,Consulting and Marketing,mercury_consulting_financial,(1) micro,(1) low
+org_2116,Consulting and Marketing,mercury_consulting_strategy,(1) micro,(1) low
+org_3093,E-commerce,mercury_retail_wholesale,(1) micro,(1) low
+org_33147,Technology,mercury_artificial_intelligence,(2) small,(2) high
+org_22660,E-commerce,beauty_cosmetics,(1) micro,(1) low
+org_197,Consulting and Marketing,mercury_consulting_strategy,(1) micro,(1) low
+org_29991,E-commerce,mercury_retail_wholesale,(1) micro,(1) low
+org_42475,Consulting and Marketing,mercury_consulting_strategy,(1) micro,(1) low
+org_3323,Technology,mercury_b2b,(2) small,(2) high
+org_29415,Consulting and Marketing,mercury_advertising,(1) micro,(1) low
+org_316,E-commerce,mercury_online_retailer_amazon,(1) micro,(2) high
+org_22819,Consulting and Marketing,mercury_marketing,(1) micro,(1) low
+org_15081,Technology,it_telecom,(1) micro,(1) low
+org_45562,Consulting and Marketing,mercury_advertising,(1) micro,(1) low
+org_34487,E-commerce,mercury_online_retailer_shopify,(1) micro,(1) low
+org_20127,Consulting and Marketing,mercury_marketing,(1) micro,(1) low
+org_39818,Technology,mercury_software,(1) micro,(2) high
+org_22404,Consulting and Marketing,mercury_advertising,(1) micro,(2) high
+org_37031,E-commerce,mercury_retail_wholesale,(1) micro,(1) low
+org_3030,Consulting and Marketing,mercury_advertising,(1) micro,(2) high
+org_25438,E-commerce,mercury_online_retailer_amazon,(1) micro,(1) low
+org_20812,Consulting and Marketing,mercury_marketing,(1) micro,(1) low
+org_90,E-commerce,mercury_retail_wholesale,(1) micro,(1) low
+org_11209,Technology,mercury_artificial_intelligence,(1) micro,(2) high
+org_9102,Technology,mercury_software,(1) micro,(2) high
+org_32962,E-commerce,mercury_retail_wholesale,(1) micro,(1) low
+org_27489,Consulting and Marketing,mercury_marketing,(1) micro,(1) low
+org_35114,Consulting and Marketing,mercury_marketing,(1) micro,(1) low
+org_56255,Technology,mercury_artificial_intelligence,(1) micro,(2) high
+org_29544,Technology,mercury_software,(3) medium,(2) high
+org_38379,E-commerce,mercury_online_retailer_amazon,(1) micro,(2) high
+org_21895,E-commerce,mercury_online_retailer_amazon,(1) micro,(1) low
+org_4795,Technology,mercury_software,(1) micro,(2) high
+org_2383,E-commerce,beauty_cosmetics,(1) micro,(1) low
+org_21262,E-commerce,shipping_warehousing,(1) micro,(1) low
+org_7382,Technology,mercury_artificial_intelligence,(1) micro,(2) high
+org_39070,Consulting and Marketing,mercury_marketing,(1) micro,(1) low
+org_33111,E-commerce,mercury_online_retailer_amazon,(1) micro,(1) low
+org_31887,Technology,mercury_software,(1) micro,(2) high
+org_32569,Consulting and Marketing,mercury_marketing,(1) micro,(1) low
+org_50766,Technology,it_telecom,(1) micro,(1) low
+org_41917,Consulting and Marketing,mercury_marketing,(3) medium,(1) low
+org_33096,E-commerce,shipping_warehousing,(1) micro,(1) low
+org_16763,E-commerce,mercury_online_retailer_amazon,(1) micro,(1) low
+org_17305,Technology,mercury_b2b,(1) micro,(2) high
+org_30933,Technology,mercury_artificial_intelligence,(2) small,(2) high
+org_7296,E-commerce,mercury_retail_wholesale,(1) micro,(1) low
+org_20164,E-commerce,mercury_online_retailer_amazon,(1) micro,(1) low
+org_35913,Technology,mercury_b2b,(1) micro,(2) high
+org_33625,Consulting and Marketing,mercury_marketing,(1) micro,(1) low
+org_25614,E-commerce,mercury_retail_wholesale,(1) micro,(1) low
+org_35457,Consulting and Marketing,professional_services,(1) micro,(2) high
+org_3087,E-commerce,mercury_online_retailer_shopify,(1) micro,(1) low
+org_37988,E-commerce,mercury_online_retailer_amazon,(1) micro,(1) low
+org_43579,Technology,mercury_software,(1) micro,(2) high
+org_11667,Consulting and Marketing,mercury_marketing,(1) micro,(1) low
+org_11891,E-commerce,mercury_online_retailer_shopify,(1) micro,(1) low
+org_23004,E-commerce,mercury_retail_wholesale,(1) micro,(1) low
+org_38851,E-commerce,beauty_cosmetics,(1) micro,(1) low
+org_33459,Consulting and Marketing,mercury_marketing,(1) micro,(1) low
+org_30619,E-commerce,mercury_retail_wholesale,(1) micro,(2) high
+org_53121,Technology,mercury_developer_tools,(1) micro,(2) high
+org_14247,Technology,mercury_b2b,(1) micro,(2) high
+org_31130,E-commerce,mercury_online_retailer_shopify,(1) micro,(1) low
+org_3136,Consulting and Marketing,mercury_marketing,(1) micro,(1) low
+org_39738,Consulting and Marketing,mercury_marketing,(1) micro,(1) low
+org_56517,Consulting and Marketing,mercury_marketing,(1) micro,(1) low
+org_44890,E-commerce,beauty_cosmetics,(1) micro,(1) low
+org_28069,E-commerce,mercury_online_retailer_amazon,(1) micro,(1) low
+org_14227,E-commerce,mercury_retail_wholesale,(1) micro,(2) high
+org_12810,Consulting and Marketing,mercury_marketing,(1) micro,(1) low
+org_26206,Technology,mercury_software,(1) micro,(2) high
+org_2498,Technology,mercury_software,(1) micro,(2) high
+org_27553,E-commerce,mercury_retail_wholesale,(1) micro,(1) low
+org_52368,Consulting and Marketing,mercury_marketing,(1) micro,(1) low
+org_5669,E-commerce,mercury_online_retailer_shopify,(1) micro,(1) low
+org_5100,E-commerce,mercury_online_retailer_shopify,(1) micro,(1) low
+org_34287,Technology,mercury_artificial_intelligence,(1) micro,(2) high
+org_33742,Technology,mercury_software,(1) micro,(2) high
+org_7420,E-commerce,mercury_online_retailer_shopify,(1) micro,(1) low
+org_5848,Technology,mercury_software,(1) micro,(2) high
+org_35938,Technology,mercury_developer_tools,(1) micro,(2) high
+org_46832,E-commerce,mercury_online_retailer_shopify,(1) micro,(1) low
+org_38894,Technology,mercury_artificial_intelligence,(1) micro,(2) high
+org_53584,Technology,mercury_b2b,(1) micro,(2) high
+org_45301,Technology,mercury_b2b,(1) micro,(2) high
+org_32397,E-commerce,mercury_online_retailer_amazon,(1) micro,(1) low
+org_23489,E-commerce,mercury_online_retailer_shopify,(1) micro,(1) low
+org_10702,Consulting and Marketing,mercury_marketing,(2) small,(1) low
+org_6593,Technology,mercury_software,(1) micro,(2) high
+org_37958,Technology,it_telecom,(1) micro,(2) high
+org_18156,E-commerce,mercury_retail_wholesale,(1) micro,(1) low
+org_42085,E-commerce,mercury_online_retailer_amazon,(1) micro,(1) low
+org_50440,Technology,mercury_b2b,(1) micro,(2) high
+org_38076,Technology,mercury_software,(1) micro,(2) high
+org_35481,Technology,mercury_software,(1) micro,(2) high
+org_21051,Technology,mercury_software,(1) micro,(2) high
+org_16610,Consulting and Marketing,mercury_marketing,(1) micro,(1) low
+org_9280,Consulting and Marketing,mercury_marketing,(1) micro,(2) high
+org_33669,Technology,mercury_software,(1) micro,(2) high
+org_12361,Technology,mercury_artificial_intelligence,(2) small,(2) high
+org_21222,E-commerce,mercury_retail_wholesale,(1) micro,(1) low
+org_60578,Technology,mercury_software,(1) micro,(2) high
+org_22170,E-commerce,mercury_retail_wholesale,(1) micro,(1) low
+org_9776,E-commerce,mercury_retail_wholesale,(1) micro,(2) high
+org_27888,E-commerce,shipping_warehousing,(1) micro,(1) low
+org_52840,E-commerce,mercury_online_retailer_amazon,(1) micro,(1) low
+org_34121,Technology,mercury_software,(1) micro,(2) high
+org_19872,E-commerce,beauty_cosmetics,(1) micro,(1) low
+org_29838,Technology,mercury_b2b,(1) micro,(2) high
+org_53237,E-commerce,mercury_online_retailer_shopify,(1) micro,(1) low
+org_4063,E-commerce,mercury_retail_wholesale,(1) micro,(1) low
+org_5311,Technology,mercury_artificial_intelligence,(1) micro,(2) high
+org_22017,Technology,mercury_developer_tools,(1) micro,(2) high
+org_29483,Technology,mercury_software,(1) micro,(2) high
+org_26472,Consulting and Marketing,professional_services,(1) micro,(1) low
+org_95,Consulting and Marketing,professional_services,(1) micro,(2) high
+org_13819,Technology,mercury_software,(1) micro,(2) high
+org_207,Consulting and Marketing,mercury_marketing,(1) micro,(2) high
+org_9262,E-commerce,mercury_online_retailer_amazon,(1) micro,(1) low
+org_51589,Consulting and Marketing,mercury_consulting_strategy,(1) micro,(1) low
+org_1042,Technology,mercury_developer_tools,(3) medium,(2) high
+org_58736,E-commerce,mercury_retail_wholesale,(1) micro,(1) low
+org_26945,E-commerce,mercury_online_retailer_amazon,(1) micro,(1) low
+org_8621,Consulting and Marketing,mercury_marketing,(1) micro,(2) high
+org_40151,Technology,mercury_b2b,(1) micro,(2) high
+org_55483,Consulting and Marketing,mercury_advertising,(1) micro,(1) low
+org_11280,E-commerce,mercury_online_retailer_shopify,(1) micro,(1) low
+org_6041,Technology,mercury_software,(1) micro,(2) high
+org_41306,E-commerce,mercury_retail_wholesale,(1) micro,(1) low
+org_19691,Technology,mercury_b2b,(1) micro,(2) high
+org_26089,E-commerce,mercury_online_retailer_amazon,(1) micro,(1) low
+org_7907,Consulting and Marketing,mercury_marketing,(1) micro,(1) low
+org_26377,Technology,mercury_b2b,(1) micro,(2) high
+org_7423,E-commerce,mercury_online_retailer_shopify,(1) micro,(1) low
+org_11941,Technology,mercury_b2b,(1) micro,(2) high
+org_22482,Consulting and Marketing,mercury_marketing,(1) micro,(1) low
+org_7453,Technology,mercury_b2b,(1) micro,(2) high
+org_53664,Technology,mercury_b2b,(1) micro,(2) high
+org_17409,Technology,mercury_b2b,(1) micro,(2) high
+org_9180,Technology,mercury_software,(1) micro,(2) high
+org_4587,Technology,mercury_software,(1) micro,(2) high
+org_61026,Consulting and Marketing,mercury_consulting_strategy,(1) micro,(1) low
+org_46449,E-commerce,beauty_cosmetics,(1) micro,(1) low
+org_44029,Consulting and Marketing,professional_services,(1) micro,(1) low
+org_24821,Technology,mercury_artificial_intelligence,(1) micro,(2) high
+org_41384,E-commerce,mercury_retail_wholesale,(1) micro,(1) low
+org_34798,Technology,mercury_software,(1) micro,(2) high
+org_3576,Technology,mercury_software,(1) micro,(2) high
+org_54044,Technology,mercury_software,(1) micro,(2) high
+org_26596,Technology,mercury_b2b,(2) small,(2) high
+org_19302,Technology,mercury_artificial_intelligence,(1) micro,(2) high
+org_20471,Consulting and Marketing,mercury_marketing,(1) micro,(1) low
+org_47840,Technology,mercury_software,(1) micro,(2) high
+org_51473,E-commerce,mercury_online_retailer_amazon,(1) micro,(1) low
+org_12606,E-commerce,mercury_retail_wholesale,(1) micro,(1) low
+org_21970,Technology,mercury_b2b,(2) small,(2) high
+org_47410,Technology,mercury_developer_tools,(1) micro,(2) high
+org_20255,E-commerce,mercury_retail_wholesale,(1) micro,(1) low
+org_8389,Consulting and Marketing,mercury_marketing,(1) micro,(1) low
+org_60337,Consulting and Marketing,mercury_marketing,(1) micro,(1) low
+org_50484,E-commerce,shipping_warehousing,(1) micro,(1) low
+org_55047,E-commerce,mercury_online_retailer_shopify,(1) micro,(1) low
+org_28478,E-commerce,mercury_online_retailer_shopify,(3) medium,(1) low
+org_17111,E-commerce,mercury_retail_wholesale,(1) micro,(1) low
+org_41398,E-commerce,mercury_online_retailer_amazon,(1) micro,(1) low
+org_49779,E-commerce,mercury_retail_wholesale,(1) micro,(1) low
+org_22552,Technology,mercury_software,(1) micro,(2) high
+org_28600,Consulting and Marketing,mercury_marketing,(1) micro,(1) low
+org_43411,E-commerce,mercury_online_retailer_amazon,(1) micro,(1) low
+org_40782,Technology,mercury_software,(1) micro,(2) high
+org_44692,Consulting and Marketing,mercury_marketing,(1) micro,(1) low
+org_50130,E-commerce,beauty_cosmetics,(1) micro,(1) low
+org_33624,Consulting and Marketing,mercury_marketing,(1) micro,(1) low
+org_54889,Technology,it_telecom,(1) micro,(1) low
+org_53728,Technology,mercury_b2b,(2) small,(2) high
+org_57678,Technology,mercury_b2b,(1) micro,(2) high
+org_35869,Technology,mercury_software,(1) micro,(2) high
+org_24053,E-commerce,mercury_retail_wholesale,(1) micro,(1) low
+org_50871,Technology,mercury_artificial_intelligence,(1) micro,(2) high
+org_41538,Consulting and Marketing,professional_services,(1) micro,(1) low
+org_43493,Technology,mercury_b2b,(1) micro,(2) high
+org_38505,Technology,mercury_b2b,(1) micro,(2) high
+org_32033,Consulting and Marketing,mercury_marketing,(1) micro,(1) low
+org_1931,Technology,mercury_software,(1) micro,(2) high
+org_49220,Technology,mercury_software,(1) micro,(2) high
+org_53465,E-commerce,mercury_online_retailer_amazon,(1) micro,(1) low
+org_37556,Technology,mercury_software,(1) micro,(2) high
+org_9217,E-commerce,mercury_online_retailer_amazon,(1) micro,(1) low
+org_50292,Consulting and Marketing,mercury_marketing,(1) micro,(1) low
+org_39931,E-commerce,mercury_online_retailer_amazon,(1) micro,(1) low
+org_61399,E-commerce,mercury_online_retailer_amazon,(1) micro,(1) low
+org_29477,Technology,it_telecom,(2) small,(1) low
+org_30453,Technology,mercury_b2b,(1) micro,(2) high
+org_20544,E-commerce,beauty_cosmetics,(1) micro,(1) low
+org_48672,Consulting and Marketing,mercury_marketing,(1) micro,(1) low
+org_16781,Consulting and Marketing,mercury_marketing,(1) micro,(1) low
+org_29932,E-commerce,mercury_online_retailer_shopify,(1) micro,(1) low
+org_54575,Technology,it_telecom,(1) micro,(1) low
+org_42445,E-commerce,mercury_online_retailer_amazon,(1) micro,(1) low
+org_47845,E-commerce,mercury_online_retailer_shopify,(1) micro,(1) low
+org_50069,Consulting and Marketing,mercury_advertising,(1) micro,(1) low
+org_19462,Technology,mercury_software,(1) micro,(2) high
+org_62416,Technology,mercury_b2b,(1) micro,(2) high
+org_58750,E-commerce,beauty_cosmetics,(1) micro,(2) high
+org_53075,E-commerce,mercury_online_retailer_shopify,(1) micro,(1) low
+org_39819,Consulting and Marketing,professional_services,(3) medium,(1) low
+org_43235,E-commerce,mercury_online_retailer_shopify,(2) small,(1) low
+org_5180,Consulting and Marketing,mercury_marketing,(1) micro,(1) low
+org_19643,Technology,mercury_b2b,(1) micro,(2) high
+org_34420,Consulting and Marketing,mercury_consulting_strategy,(1) micro,(1) low
+org_37411,Technology,mercury_software,(1) micro,(2) high
+org_52108,E-commerce,mercury_retail_wholesale,(1) micro,(1) low
+org_63283,Consulting and Marketing,mercury_marketing,(1) micro,(1) low
+org_24144,Consulting and Marketing,mercury_consulting_financial,(1) micro,(2) high
+org_24619,Technology,mercury_b2b,(1) micro,(2) high
+org_31999,E-commerce,mercury_online_retailer_amazon,(1) micro,(1) low
+org_58875,E-commerce,mercury_retail_wholesale,(1) micro,(1) low
+org_62808,E-commerce,mercury_retail_wholesale,(1) micro,(1) low
+org_45457,E-commerce,mercury_online_retailer_amazon,(1) micro,(1) low
+org_17087,Technology,mercury_developer_tools,(1) micro,(2) high
+org_3411,E-commerce,mercury_online_retailer_shopify,(1) micro,(1) low
+org_46235,Consulting and Marketing,professional_services,(1) micro,(1) low
+org_60505,E-commerce,mercury_online_retailer_amazon,(1) micro,(1) low
+org_55223,Consulting and Marketing,mercury_consulting_strategy,(1) micro,(1) low
+org_43462,Technology,it_telecom,(1) micro,(1) low
+org_54126,Technology,mercury_artificial_intelligence,(1) micro,(2) high
+org_59510,E-commerce,mercury_retail_wholesale,(1) micro,(1) low
+org_61286,Technology,mercury_developer_tools,(1) micro,(2) high
+org_56150,Technology,mercury_artificial_intelligence,(1) micro,(2) high
+org_27273,Consulting and Marketing,mercury_marketing,(1) micro,(1) low
+org_30106,E-commerce,beauty_cosmetics,(1) micro,(1) low
+org_52100,Technology,mercury_software,(1) micro,(2) high
+org_59464,E-commerce,mercury_online_retailer_shopify,(1) micro,(1) low
+org_60474,E-commerce,beauty_cosmetics,(1) micro,(1) low
+org_62631,Technology,mercury_software,(1) micro,(2) high
+org_58553,Technology,mercury_software,(1) micro,(2) high
+org_55958,Consulting and Marketing,mercury_marketing,(3) medium,(1) low
+org_58937,E-commerce,mercury_retail_wholesale,(1) micro,(1) low
+org_56379,Technology,mercury_b2b,(2) small,(2) high
+org_60812,Technology,mercury_artificial_intelligence,(1) micro,(2) high
+org_56185,Consulting and Marketing,mercury_marketing,(3) medium,(1) low
+org_61978,Technology,mercury_artificial_intelligence,(2) small,(2) high
+org_63991,Technology,it_telecom,(1) micro,(1) low
+org_60068,Technology,mercury_software,(1) micro,(2) high
+org_55538,Technology,it_telecom,(1) micro,(2) high
+org_60380,Consulting and Marketing,mercury_marketing,(1) micro,(1) low
+org_56236,Technology,mercury_software,(1) micro,(2) high
+org_59172,E-commerce,mercury_retail_wholesale,(1) micro,(1) low
+org_60551,E-commerce,mercury_online_retailer_amazon,(1) micro,(1) low
+org_62140,Technology,mercury_software,(1) micro,(2) high
+org_64954,Technology,mercury_software,(1) micro,(2) high
+org_64738,E-commerce,mercury_online_retailer_shopify,(1) micro,(1) low
+org_63327,Consulting and Marketing,mercury_consulting_financial,(1) micro,(1) low
+org_64358,Technology,mercury_software,(1) micro,(2) high
+org_64956,E-commerce,shipping_warehousing,(1) micro,(1) low
+org_64967,E-commerce,beauty_cosmetics,(1) micro,(2) high
+org_64889,Consulting and Marketing,mercury_consulting_strategy,(2) small,(1) low
+org_25537,E-commerce,mercury_online_retailer_shopify,(1) micro,(1) low
+org_31896,Consulting and Marketing,mercury_advertising,(1) micro,(1) low
+org_11548,Consulting and Marketing,mercury_marketing,(1) micro,(1) low
+org_35408,E-commerce,beauty_cosmetics,(1) micro,(1) low
+org_60566,Technology,mercury_software,(1) micro,(2) high
+org_46160,Consulting and Marketing,mercury_consulting_financial,(1) micro,(1) low
+org_13836,E-commerce,mercury_retail_wholesale,(1) micro,(1) low
+org_45442,E-commerce,mercury_online_retailer_shopify,(1) micro,(1) low
+org_38012,Consulting and Marketing,mercury_marketing,(1) micro,(1) low
+org_41825,E-commerce,mercury_retail_wholesale,(1) micro,(1) low
+org_52086,Technology,mercury_b2b,(1) micro,(2) high
+org_36966,E-commerce,mercury_online_retailer_shopify,(1) micro,(1) low
+org_59557,Consulting and Marketing,mercury_marketing,(1) micro,(1) low
+org_2746,E-commerce,mercury_retail_wholesale,(1) micro,(1) low
+org_26355,E-commerce,mercury_retail_wholesale,(1) micro,(1) low
+org_42970,E-commerce,mercury_retail_wholesale,(1) micro,(1) low
+org_25864,Consulting and Marketing,mercury_marketing,(1) micro,(1) low
+org_64056,E-commerce,mercury_retail_wholesale,(1) micro,(1) low
+org_8492,E-commerce,mercury_retail_wholesale,(1) micro,(1) low
+org_41083,E-commerce,mercury_retail_wholesale,(1) micro,(1) low
+org_29950,Technology,mercury_artificial_intelligence,(1) micro,(2) high
+org_44556,Technology,it_telecom,(1) micro,(1) low
+org_31757,E-commerce,beauty_cosmetics,(1) micro,(1) low
+org_36797,Technology,mercury_b2b,(1) micro,(2) high
+org_36172,E-commerce,mercury_online_retailer_shopify,(1) micro,(1) low
+org_58844,Consulting and Marketing,mercury_advertising,(1) micro,(1) low
+org_8641,Consulting and Marketing,mercury_advertising,(1) micro,(1) low
+org_61640,E-commerce,mercury_retail_wholesale,(1) micro,(1) low
+org_3328,Technology,mercury_developer_tools,(1) micro,(2) high
+org_20634,Consulting and Marketing,mercury_consulting_financial,(1) micro,(1) low
+org_38406,Technology,mercury_software,(1) micro,(2) high
+org_920,Consulting and Marketing,mercury_advertising,(1) micro,(1) low
+org_40385,Technology,mercury_software,(1) micro,(2) high
+org_6584,Consulting and Marketing,mercury_marketing,(1) micro,(1) low
+org_57194,Technology,mercury_software,(1) micro,(2) high
+org_54049,E-commerce,mercury_retail_wholesale,(1) micro,(1) low
+org_56619,E-commerce,mercury_retail_wholesale,(1) micro,(1) low
+org_16591,Technology,it_telecom,(1) micro,(1) low
+org_5979,E-commerce,shipping_warehousing,(1) micro,(1) low
+org_35275,Consulting and Marketing,mercury_advertising,(1) micro,(1) low
+org_28668,E-commerce,mercury_online_retailer_shopify,(1) micro,(1) low
+org_35743,Technology,mercury_software,(1) micro,(2) high
+org_58134,Consulting and Marketing,mercury_marketing,(1) micro,(1) low
+org_34114,E-commerce,mercury_online_retailer_shopify,(1) micro,(1) low
+org_16010,E-commerce,mercury_retail_wholesale,(1) micro,(1) low
+org_52072,E-commerce,mercury_online_retailer_shopify,(1) micro,(1) low
+org_18223,E-commerce,mercury_retail_wholesale,(1) micro,(1) low
+org_14584,Technology,it_telecom,(1) micro,(1) low
+org_46654,Consulting and Marketing,mercury_marketing,(1) micro,(1) low
+org_37775,E-commerce,mercury_online_retailer_amazon,(1) micro,(1) low
+org_17145,E-commerce,mercury_online_retailer_amazon,(1) micro,(1) low
+org_45601,E-commerce,mercury_online_retailer_amazon,(1) micro,(1) low
+org_10442,Consulting and Marketing,mercury_marketing,(1) micro,(1) low
+org_52842,Technology,mercury_software,(1) micro,(2) high
+org_322,Consulting and Marketing,professional_services,(1) micro,(1) low
+org_45110,Consulting and Marketing,mercury_consulting_strategy,(1) micro,(1) low
+org_17207,E-commerce,mercury_retail_wholesale,(1) micro,(1) low
+org_10540,E-commerce,mercury_online_retailer_amazon,(1) micro,(1) low
+org_40664,E-commerce,mercury_retail_wholesale,(1) micro,(1) low
+org_10015,Consulting and Marketing,mercury_consulting_financial,(1) micro,(1) low
+org_34944,Technology,mercury_software,(1) micro,(2) high
+org_55937,E-commerce,mercury_online_retailer_amazon,(1) micro,(1) low
+org_13193,E-commerce,mercury_retail_wholesale,(1) micro,(1) low
+org_13314,Consulting and Marketing,professional_services,(1) micro,(1) low
+org_55051,Consulting and Marketing,mercury_marketing,(1) micro,(1) low
+org_21937,E-commerce,mercury_retail_wholesale,(1) micro,(1) low
+org_796,Technology,mercury_software,(1) micro,(2) high
+org_34018,E-commerce,mercury_retail_wholesale,(1) micro,(1) low
+org_64599,E-commerce,mercury_retail_wholesale,(1) micro,(1) low
+org_44673,E-commerce,mercury_online_retailer_shopify,(1) micro,(1) low
+org_45802,E-commerce,mercury_retail_wholesale,(1) micro,(1) low
+org_30837,E-commerce,mercury_retail_wholesale,(1) micro,(1) low
+org_40109,Consulting and Marketing,mercury_marketing,(1) micro,(1) low
+org_52650,Technology,mercury_software,(1) micro,(2) high
+org_11284,E-commerce,beauty_cosmetics,(1) micro,(1) low
+org_51496,E-commerce,mercury_online_retailer_shopify,(1) micro,(1) low
+org_32390,E-commerce,mercury_online_retailer_amazon,(1) micro,(1) low
+org_2563,Technology,mercury_b2b,(1) micro,(2) high
+org_13219,Technology,mercury_artificial_intelligence,(1) micro,(2) high
+org_61900,Technology,it_telecom,(1) micro,(1) low
+org_12711,Technology,mercury_software,(1) micro,(2) high
+org_56506,Consulting and Marketing,mercury_consulting_strategy,(1) micro,(1) low
+org_60233,E-commerce,mercury_online_retailer_shopify,(1) micro,(2) high
+org_60228,E-commerce,mercury_online_retailer_shopify,(1) micro,(1) low
+org_12870,E-commerce,mercury_retail_wholesale,(1) micro,(1) low
+org_48476,Technology,mercury_b2b,(1) micro,(2) high
+org_56023,Technology,mercury_software,(1) micro,(2) high
+org_60436,Consulting and Marketing,mercury_advertising,(1) micro,(1) low
+org_17815,E-commerce,mercury_online_retailer_amazon,(1) micro,(1) low
+org_17817,Technology,mercury_artificial_intelligence,(1) micro,(2) high
+org_8060,E-commerce,mercury_online_retailer_amazon,(1) micro,(1) low
+org_45469,E-commerce,mercury_retail_wholesale,(1) micro,(1) low
+org_58052,Technology,mercury_b2b,(1) micro,(2) high
+org_52078,E-commerce,mercury_retail_wholesale,(1) micro,(1) low
+org_26079,Technology,it_telecom,(1) micro,(1) low
+org_60162,E-commerce,mercury_retail_wholesale,(1) micro,(1) low
+org_37926,Consulting and Marketing,mercury_marketing,(1) micro,(1) low
+org_45075,E-commerce,mercury_retail_wholesale,(1) micro,(1) low
+org_18642,Consulting and Marketing,mercury_advertising,(1) micro,(1) low
+org_17441,E-commerce,mercury_online_retailer_shopify,(1) micro,(1) low
+org_13738,Technology,it_telecom,(1) micro,(1) low
+org_44719,E-commerce,mercury_online_retailer_amazon,(1) micro,(1) low
+org_47211,Consulting and Marketing,professional_services,(1) micro,(1) low
+org_9896,E-commerce,mercury_retail_wholesale,(1) micro,(1) low
+org_39429,Technology,it_telecom,(1) micro,(2) high
+org_42147,E-commerce,mercury_online_retailer_amazon,(1) micro,(1) low
+org_47342,E-commerce,mercury_online_retailer_amazon,(1) micro,(1) low
+org_16347,E-commerce,mercury_retail_wholesale,(1) micro,(1) low
+org_8805,E-commerce,mercury_retail_wholesale,(1) micro,(1) low
+org_7727,Consulting and Marketing,mercury_consulting_financial,(1) micro,(1) low
+org_41964,E-commerce,mercury_retail_wholesale,(1) micro,(1) low
+org_11788,E-commerce,mercury_online_retailer_amazon,(1) micro,(1) low
+org_14813,E-commerce,mercury_retail_wholesale,(1) micro,(1) low
+org_3968,E-commerce,mercury_retail_wholesale,(1) micro,(1) low
+org_28544,Technology,mercury_b2b,(1) micro,(2) high
+org_56837,Technology,mercury_developer_tools,(1) micro,(2) high
+org_44217,Consulting and Marketing,mercury_consulting_financial,(1) micro,(2) high
+org_57841,E-commerce,mercury_online_retailer_amazon,(1) micro,(1) low
+org_58308,Consulting and Marketing,mercury_marketing,(1) micro,(1) low
+org_21692,E-commerce,shipping_warehousing,(1) micro,(1) low
+org_27724,E-commerce,mercury_retail_wholesale,(1) micro,(1) low
+org_46746,E-commerce,mercury_online_retailer_shopify,(1) micro,(1) low
+org_48195,E-commerce,mercury_retail_wholesale,(1) micro,(1) low
+org_20433,E-commerce,mercury_online_retailer_amazon,(1) micro,(1) low
+org_37228,Consulting and Marketing,mercury_advertising,(1) micro,(1) low
+org_18422,Technology,mercury_b2b,(1) micro,(2) high
+org_53499,Consulting and Marketing,mercury_marketing,(1) micro,(1) low
+org_14217,E-commerce,beauty_cosmetics,(1) micro,(1) low
+org_49714,E-commerce,mercury_retail_wholesale,(1) micro,(1) low
+org_60800,E-commerce,mercury_online_retailer_shopify,(1) micro,(1) low
+org_40938,Consulting and Marketing,mercury_marketing,(1) micro,(1) low
+org_45706,E-commerce,mercury_online_retailer_amazon,(1) micro,(1) low
+org_46584,Consulting and Marketing,mercury_consulting_financial,(1) micro,(1) low
+org_9215,Consulting and Marketing,mercury_consulting_financial,(1) micro,(1) low
+org_10128,Technology,it_telecom,(1) micro,(1) low
+org_57188,E-commerce,mercury_retail_wholesale,(1) micro,(1) low
+org_10530,Consulting and Marketing,mercury_marketing,(1) micro,(1) low
+org_39625,E-commerce,mercury_retail_wholesale,(1) micro,(1) low
+org_47170,E-commerce,beauty_cosmetics,(1) micro,(1) low
+org_34405,E-commerce,beauty_cosmetics,(1) micro,(1) low
+org_22569,Technology,it_telecom,(1) micro,(2) high
+org_39290,E-commerce,mercury_retail_wholesale,(1) micro,(1) low
+org_40349,E-commerce,mercury_online_retailer_amazon,(1) micro,(1) low
+org_60779,E-commerce,mercury_retail_wholesale,(1) micro,(1) low
+org_54199,E-commerce,mercury_online_retailer_shopify,(1) micro,(1) low
+org_60025,E-commerce,shipping_warehousing,(1) micro,(1) low
+org_54074,Technology,mercury_software,(1) micro,(2) high
+org_3024,Technology,mercury_b2b,(1) micro,(2) high
+org_64526,E-commerce,mercury_retail_wholesale,(1) micro,(1) low
+org_55419,Consulting and Marketing,mercury_marketing,(1) micro,(1) low
+org_13277,E-commerce,mercury_retail_wholesale,(1) micro,(1) low
+org_48728,E-commerce,mercury_retail_wholesale,(1) micro,(1) low
+org_21647,E-commerce,beauty_cosmetics,(1) micro,(1) low
+org_21394,E-commerce,mercury_retail_wholesale,(1) micro,(1) low
+org_47054,Technology,it_telecom,(1) micro,(1) low
+org_62058,E-commerce,mercury_retail_wholesale,(1) micro,(1) low
+org_36706,E-commerce,mercury_online_retailer_amazon,(1) micro,(1) low
+org_45941,E-commerce,mercury_retail_wholesale,(1) micro,(1) low
+org_7192,E-commerce,shipping_warehousing,(1) micro,(1) low
+org_8648,Technology,mercury_artificial_intelligence,(1) micro,(2) high
+org_44695,Technology,it_telecom,(1) micro,(1) low
+org_8110,E-commerce,mercury_retail_wholesale,(1) micro,(1) low
+org_53197,Consulting and Marketing,mercury_consulting_financial,(1) micro,(1) low
+org_46565,E-commerce,mercury_retail_wholesale,(1) micro,(1) low
+org_28959,E-commerce,mercury_retail_wholesale,(1) micro,(1) low
+org_15199,Consulting and Marketing,mercury_marketing,(1) micro,(1) low
+org_30683,Technology,it_telecom,(1) micro,(1) low
+org_34416,E-commerce,mercury_retail_wholesale,(1) micro,(1) low
+org_26193,E-commerce,mercury_online_retailer_amazon,(1) micro,(1) low
+org_52203,Consulting and Marketing,mercury_consulting_financial,(1) micro,(1) low
+org_27305,Technology,mercury_developer_tools,(1) micro,(2) high
+org_32608,Consulting and Marketing,mercury_consulting_strategy,(1) micro,(1) low
+org_61124,E-commerce,mercury_online_retailer_amazon,(1) micro,(1) low
+org_57111,Consulting and Marketing,mercury_marketing,(1) micro,(1) low
+org_47215,E-commerce,mercury_online_retailer_shopify,(1) micro,(1) low
+org_7803,Consulting and Marketing,mercury_marketing,(1) micro,(1) low
+org_52708,E-commerce,mercury_retail_wholesale,(1) micro,(1) low
+org_4764,Consulting and Marketing,professional_services,(1) micro,(1) low
+org_55979,Technology,mercury_artificial_intelligence,(1) micro,(2) high
+org_37619,Technology,it_telecom,(1) micro,(1) low
+org_52618,E-commerce,mercury_retail_wholesale,(1) micro,(1) low
+org_15527,Consulting and Marketing,mercury_consulting_strategy,(1) micro,(1) low
+org_2322,Technology,mercury_software,(1) micro,(2) high
+org_27790,E-commerce,beauty_cosmetics,(1) micro,(1) low
+org_22139,E-commerce,beauty_cosmetics,(1) micro,(1) low
+org_6012,Consulting and Marketing,mercury_advertising,(1) micro,(2) high
+org_15796,Consulting and Marketing,professional_services,(1) micro,(1) low
+org_50323,E-commerce,mercury_online_retailer_amazon,(1) micro,(1) low
+org_7080,Consulting and Marketing,mercury_marketing,(1) micro,(1) low
+org_16618,E-commerce,mercury_retail_wholesale,(1) micro,(1) low
+org_63503,E-commerce,mercury_retail_wholesale,(1) micro,(1) low
+org_45353,Technology,it_telecom,(1) micro,(1) low
+org_2880,E-commerce,mercury_online_retailer_amazon,(1) micro,(1) low
+org_62910,Consulting and Marketing,mercury_marketing,(1) micro,(1) low
+org_59497,E-commerce,mercury_online_retailer_shopify,(1) micro,(1) low
+org_56548,E-commerce,mercury_retail_wholesale,(1) micro,(1) low
+org_58681,E-commerce,mercury_online_retailer_amazon,(1) micro,(1) low
+org_24514,Technology,it_telecom,(1) micro,(1) low
+org_25523,Consulting and Marketing,mercury_marketing,(1) micro,(1) low
+org_54662,Technology,mercury_b2b,(1) micro,(2) high
+org_35841,Consulting and Marketing,mercury_advertising,(1) micro,(1) low
+org_36255,E-commerce,mercury_online_retailer_shopify,(1) micro,(1) low
+org_2185,E-commerce,mercury_online_retailer_amazon,(1) micro,(1) low
+org_16442,E-commerce,mercury_online_retailer_shopify,(1) micro,(1) low
+org_19832,Consulting and Marketing,mercury_marketing,(1) micro,(1) low
+org_51617,Technology,mercury_b2b,(1) micro,(2) high
+org_56928,Technology,mercury_artificial_intelligence,(1) micro,(2) high
+org_41211,E-commerce,mercury_online_retailer_shopify,(1) micro,(1) low
+org_56032,E-commerce,beauty_cosmetics,(1) micro,(1) low
+org_29012,E-commerce,mercury_online_retailer_amazon,(1) micro,(1) low
+org_22769,E-commerce,mercury_online_retailer_amazon,(1) micro,(1) low
+org_29982,E-commerce,shipping_warehousing,(1) micro,(1) low
+org_48765,E-commerce,mercury_retail_wholesale,(1) micro,(1) low
+org_44138,Consulting and Marketing,mercury_consulting_financial,(1) micro,(1) low
+org_22368,E-commerce,mercury_online_retailer_amazon,(1) micro,(1) low
+org_3649,E-commerce,mercury_online_retailer_shopify,(1) micro,(1) low
+org_50755,E-commerce,mercury_online_retailer_shopify,(1) micro,(1) low
+org_29355,E-commerce,mercury_retail_wholesale,(1) micro,(1) low
+org_41940,Consulting and Marketing,mercury_advertising,(1) micro,(1) low
+org_32951,E-commerce,mercury_retail_wholesale,(1) micro,(1) low
+org_44364,E-commerce,mercury_online_retailer_amazon,(1) micro,(1) low
+org_59314,E-commerce,mercury_online_retailer_amazon,(1) micro,(1) low
