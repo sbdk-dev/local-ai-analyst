@@ -1443,6 +1443,87 @@ class WorkflowOrchestrator:
             "completed_workflows": len(self.workflow_history),
         }
 
+    def list_available_templates(self) -> List[Dict[str, Any]]:
+        """
+        List all available workflow templates with comprehensive metadata.
+
+        Returns:
+            List[Dict]: List of template dictionaries with:
+                - name: Template name (workflow_id)
+                - description: Template description
+                - steps: Number of steps in the workflow
+                - step_types: List of unique step types used
+                - estimated_duration: Estimated execution time as string
+                - use_cases: Example use cases for the template
+
+        Example:
+            [
+                {
+                    "name": "conversion_deep_dive",
+                    "description": "Multi-dimensional conversion analysis",
+                    "steps": 5,
+                    "step_types": ["query", "statistical_test", "insight_generation"],
+                    "estimated_duration": "30-60s",
+                    "use_cases": ["Conversion optimization", "A/B testing"]
+                }
+            ]
+        """
+        templates = []
+
+        # Define use cases for each template
+        use_cases_mapping = {
+            "conversion_deep_dive": [
+                "Conversion rate optimization",
+                "A/B testing analysis",
+                "Plan type performance comparison",
+                "Industry-specific conversion insights",
+                "Cohort-based conversion tracking",
+            ],
+            "feature_usage_deep_dive": [
+                "Feature adoption analysis",
+                "Product engagement optimization",
+                "Power user behavior identification",
+                "Feature correlation discovery",
+                "Churn prevention through usage patterns",
+            ],
+            "revenue_optimization": [
+                "Revenue growth strategy",
+                "Expansion revenue identification",
+                "Customer lifetime value optimization",
+                "Pricing and plan optimization",
+                "Industry and segment targeting",
+            ],
+        }
+
+        # Estimated durations for each template
+        duration_mapping = {
+            "conversion_deep_dive": "30-60s",
+            "feature_usage_deep_dive": "30-60s",
+            "revenue_optimization": "30-60s",
+        }
+
+        for template_id, template in self.workflow_templates.items():
+            # Extract unique step types from the template
+            unique_step_types = list(
+                set(step.step_type.value for step in template.steps)
+            )
+
+            templates.append(
+                {
+                    "name": template_id,
+                    "description": template.description,
+                    "steps": len(template.steps),
+                    "step_types": sorted(unique_step_types),  # Sort for consistency
+                    "estimated_duration": duration_mapping.get(template_id, "30-90s"),
+                    "use_cases": use_cases_mapping.get(template_id, []),
+                }
+            )
+
+        # Sort templates by name for consistent ordering
+        templates.sort(key=lambda x: x["name"])
+
+        return templates
+
     async def cancel_workflow(self, execution_id: str) -> Dict[str, Any]:
         """Cancel an active workflow"""
 

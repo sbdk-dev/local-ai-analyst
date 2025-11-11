@@ -76,15 +76,31 @@ class ConversationMemory:
         result: Dict[str, Any],
         insights: List[str],
         statistical_analysis: Optional[Dict[str, Any]] = None,
+        model_used: Optional[str] = None,
     ) -> str:
-        """Add a new analysis interaction to memory"""
+        """Add a new analysis interaction to memory
+
+        Args:
+            user_question: The user's question or query
+            query_info: Dictionary containing query details (model, dimensions, measures, filters)
+            result: Query execution results
+            insights: List of insights generated from the query
+            statistical_analysis: Optional statistical test results
+            model_used: Optional explicit model name (overrides query_info['model'])
+
+        Returns:
+            interaction_id: Unique identifier for this interaction
+        """
 
         interaction_id = self._generate_interaction_id(user_question, query_info)
+
+        # Use explicit model_used parameter if provided, otherwise fall back to query_info
+        effective_model = model_used if model_used is not None else query_info.get("model", "")
 
         interaction = AnalysisInteraction(
             timestamp=datetime.now().isoformat(),
             user_question=user_question,
-            model_used=query_info.get("model", ""),
+            model_used=effective_model,
             dimensions=query_info.get("dimensions", []),
             measures=query_info.get("measures", []),
             filters=query_info.get("filters", {}),

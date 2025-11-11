@@ -1,0 +1,151 @@
+{
+  "swarm": {
+    "name": "claude-analyst-fix-swarm",
+    "agents": 7,
+    "coordination": "parallel-then-sequential",
+    "memory": "./.hive-mind/memory/agentdb",
+    "methodology": "SPARC+TDD"
+  },
+  "mission": "Fix all 6 failing components using SPARC methodology and TDD, then integrate WrenAI best practices",
+  "agents": [
+    {
+      "id": 1,
+      "role": "architect",
+      "name": "Specification Architect",
+      "focus": ["API specs", "architecture alignment", "SPARC specifications"],
+      "phase": "all",
+      "tasks": [
+        "Create detailed API specifications for all missing methods",
+        "Design integration patterns with existing components",
+        "Review WrenAI architecture for reusable patterns",
+        "Ensure SPARC methodology compliance"
+      ]
+    },
+    {
+      "id": 2,
+      "role": "research",
+      "name": "WrenAI Research Analyst",
+      "focus": ["WrenAI deep analysis", "component reuse", "pattern extraction"],
+      "phase": "all",
+      "tasks": [
+        "Deep analysis of WrenAI GitHub repository",
+        "Extract reusable state machine patterns",
+        "Document SQL validation approaches",
+        "Analyze MDL and RAG implementations",
+        "Create component reuse recommendations"
+      ]
+    },
+    {
+      "id": 3,
+      "role": "implementation",
+      "name": "IntelligenceEngine TDD Agent",
+      "focus": ["IntelligenceEngine", "NLG", "interpret_query_result"],
+      "phase": 1,
+      "tasks": [
+        "Write comprehensive tests for interpret_query_result()",
+        "Implement natural language generation logic",
+        "Integrate statistical insights",
+        "Add context-aware interpretation",
+        "Validate against test suite"
+      ]
+    },
+    {
+      "id": 4,
+      "role": "implementation",
+      "name": "SemanticLayer TDD Agent",
+      "focus": ["SemanticLayerManager", "model discovery"],
+      "phase": 1,
+      "tasks": [
+        "Write tests for list_available_models()",
+        "Implement model discovery from YAML files",
+        "Add model metadata extraction",
+        "Create model documentation generation",
+        "Validate functionality"
+      ]
+    },
+    {
+      "id": 5,
+      "role": "implementation",
+      "name": "Workflow TDD Agent",
+      "focus": ["WorkflowOrchestrator", "template discovery"],
+      "phase": 1,
+      "tasks": [
+        "Write tests for list_available_templates()",
+        "Implement template enumeration",
+        "Add template metadata and documentation",
+        "Create template validation",
+        "Ensure integration with existing workflows"
+      ]
+    },
+    {
+      "id": 6,
+      "role": "implementation",
+      "name": "Memory & Stats TDD Agent",
+      "focus": ["ConversationMemory", "StatisticalTester"],
+      "phase": 1,
+      "tasks": [
+        "Add model_used parameter to add_interaction()",
+        "Fix StatisticalTester initialization issues",
+        "Add null checks and error handling",
+        "Write comprehensive tests",
+        "Validate both components work together"
+      ]
+    },
+    {
+      "id": 7,
+      "role": "integration",
+      "name": "Integration & Validation Agent",
+      "focus": ["end-to-end testing", "MCP validation", "deployment"],
+      "phase": 2,
+      "tasks": [
+        "Run comprehensive test suite",
+        "Validate MCP server functionality",
+        "Test Claude Desktop integration",
+        "Performance benchmarking",
+        "Document all fixes and changes"
+      ]
+    }
+  ],
+  "phases": {
+    "1": {
+      "name": "Fix Failing Components",
+      "parallel": [3, 4, 5, 6],
+      "support": [1, 2],
+      "success_criteria": [
+        "All 7 component tests passing",
+        "100% test pass rate achieved",
+        "All missing methods implemented",
+        "All API mismatches resolved"
+      ],
+      "estimated_duration": "2-3 days"
+    },
+    "2": {
+      "name": "Integration & Validation",
+      "sequential": [7],
+      "success_criteria": [
+        "End-to-end tests passing",
+        "MCP server functional",
+        "Performance benchmarks met",
+        "Documentation updated"
+      ],
+      "estimated_duration": "1 day"
+    },
+    "3": {
+      "name": "WrenAI Integration",
+      "parallel": [1, 2, 3, 4, 5, 6],
+      "success_criteria": [
+        "State machine implemented",
+        "SQL validation layer added",
+        "RAG model discovery working",
+        "Enhanced system deployed"
+      ],
+      "estimated_duration": "2-3 days"
+    }
+  },
+  "coordination": {
+    "memory_sharing": ".hive-mind/COLLECTIVE_MEMORY.md",
+    "progress_tracking": ".hive-mind/agents/",
+    "blocking_resolution": ".hive-mind/agents/BLOCKERS.md",
+    "daily_sync": true
+  }
+}

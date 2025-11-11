@@ -1,0 +1,16 @@
+{
+  "name": "claude-analyst",
+  "version": "1.0.0",
+  "description": "> Ask questions about your data in plain English. Get statistically rigorous answers instantly.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "http://local_proxy@127.0.0.1:57204/git/sbdk-dev/claude-analyst"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}

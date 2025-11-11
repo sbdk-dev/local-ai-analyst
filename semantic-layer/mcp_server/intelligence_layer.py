@@ -486,6 +486,126 @@ class IntelligenceEngine:
 
         return " | ".join(interpretations)
 
+    async def interpret_query_result(
+        self,
+        result: Dict[str, Any],
+        dimensions: List[str] = [],
+        measures: List[str] = [],
+        statistical_analysis: Optional[Dict[str, Any]] = None,
+        context: Optional[Dict[str, Any]] = None,
+    ) -> str:
+        """
+        Generate natural language interpretation of query results.
+
+        This is a simplified interface to generate_interpretation() that matches
+        the expected signature from test_all_functionality.py.
+
+        Args:
+            result: Query result dictionary with 'data', 'metadata', etc.
+            dimensions: List of dimension names used in the query
+            measures: List of measure names used in the query
+            statistical_analysis: Optional statistical test results
+            context: Optional context including question, model, etc.
+
+        Returns:
+            str: Natural language interpretation with insights
+
+        Example:
+            result = {"data": [...], "execution_time_ms": 50}
+            interpretation = await engine.interpret_query_result(
+                result=result,
+                dimensions=["plan_type"],
+                measures=["total_users"]
+            )
+        """
+
+        # Build query_info from parameters
+        query_info = {
+            "dimensions": dimensions,
+            "measures": measures,
+        }
+
+        # Add context fields if provided
+        if context:
+            if "model" in context:
+                query_info["model"] = context["model"]
+            if "question" in context:
+                query_info["question"] = context["question"]
+
+        # Use existing generate_interpretation method
+        return await self.generate_interpretation(
+            result=result,
+            query_info=query_info,
+            statistical_analysis=statistical_analysis,
+        )
+
+    async def generate_analysis_suggestions(
+        self,
+        current_result: Optional[Dict[str, Any]] = None,
+        context: Optional[str] = None,
+        dimensions: List[str] = [],
+        measures: List[str] = [],
+    ) -> List[Dict[str, str]]:
+        """
+        Generate analysis suggestions based on current context.
+
+        This method combines suggest_next_questions() and suggest_analysis_paths()
+        to provide a unified suggestion interface.
+
+        Args:
+            current_result: Current query result (if any)
+            context: Context string describing current analysis
+            dimensions: Current dimensions being analyzed
+            measures: Current measures being analyzed
+
+        Returns:
+            List[Dict[str, str]]: List of suggestions with 'question' and optional 'reason'
+
+        Example:
+            suggestions = await engine.generate_analysis_suggestions(
+                current_result={"data": [...]},
+                context="users analysis"
+            )
+        """
+
+        suggestions = []
+
+        # If we have a current result, get next question suggestions
+        if current_result and current_result.get("data"):
+            next_questions = await self.suggest_next_questions(
+                result=current_result,
+                context=context or "",
+                current_dimensions=dimensions,
+                current_measures=measures,
+            )
+            suggestions.extend(next_questions)
+
+        # If we don't have enough suggestions, add analysis path suggestions
+        if len(suggestions) < 3:
+            # Extract model from context if possible
+            model = None
+            if context:
+                if "users" in context.lower():
+                    model = "users"
+                elif "events" in context.lower():
+                    model = "events"
+                elif "engagement" in context.lower():
+                    model = "engagement"
+
+            analysis_paths = await self.suggest_analysis_paths(
+                current_result=current_result, context=context, model=model
+            )
+
+            # Add analysis paths that aren't duplicates
+            existing_questions = {s.get("question", "").lower() for s in suggestions}
+            for path in analysis_paths:
+                if path.get("question", "").lower() not in existing_questions:
+                    suggestions.append(path)
+                    if len(suggestions) >= 5:  # Limit to 5 total suggestions
+                        break
+
+        return suggestions[:5]  # Return max 5 suggestions
+
     def add_context(self, context: Dict[str, Any]):
         """Add context to the conversation history"""
         context["timestamp"] = datetime.now().isoformat()

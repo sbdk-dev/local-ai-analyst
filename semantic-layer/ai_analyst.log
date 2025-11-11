@@ -82,3 +82,21 @@
 2025-11-08 23:38:35,388 - mcp_server.server - INFO - Semantic layer initialized successfully
 2025-11-08 23:38:35,425 - mcp_server.server - INFO - Database connected: {'file_size_mb': 9.26, 'tables': ['users', 'events', 'sessions'], 'models_loaded': 3}
 2025-11-08 23:38:35,425 - mcp_server.server - INFO - AI Analyst MCP Server ready!
+2025-11-11 20:52:51,879 - mcp_server.semantic_layer_integration - INFO - Loaded 3 semantic models
+2025-11-11 20:54:31,416 - mcp_server.semantic_layer_integration - INFO - Loaded 3 semantic models
+2025-11-11 20:54:31,417 - mcp_server.semantic_layer_integration - INFO - Building model list from 3 loaded models
+2025-11-11 20:54:31,417 - mcp_server.semantic_layer_integration - INFO - Successfully built and cached list of 3 models
+2025-11-11 20:59:17,037 - mcp_server.semantic_layer_integration - INFO - Loaded 3 semantic models
+2025-11-11 20:59:17,038 - mcp_server.semantic_layer_integration - INFO - Building model list from 3 loaded models
+2025-11-11 20:59:17,038 - mcp_server.semantic_layer_integration - INFO - Successfully built and cached list of 3 models
+2025-11-11 21:02:43,393 - mcp_server.semantic_layer_integration - INFO - Building model list from 3 loaded models
+2025-11-11 21:02:43,394 - mcp_server.semantic_layer_integration - INFO - Successfully built and cached list of 3 models
+2025-11-11 21:03:29,407 - mcp_server.semantic_layer_integration - INFO - Building model list from 3 loaded models
+2025-11-11 21:03:29,408 - mcp_server.semantic_layer_integration - INFO - Successfully built and cached list of 3 models
+2025-11-11 21:04:06,015 - mcp_server.semantic_layer_integration - INFO - Loaded 3 semantic models
+2025-11-11 21:04:06,016 - mcp_server.semantic_layer_integration - INFO - Building model list from 3 loaded models
+2025-11-11 21:04:06,016 - mcp_server.semantic_layer_integration - INFO - Successfully built and cached list of 3 models
+2025-11-11 21:04:49,124 - mcp_server.semantic_layer_integration - INFO - Loaded 3 semantic models
+2025-11-11 21:04:49,125 - mcp_server.semantic_layer_integration - INFO - Building model list from 3 loaded models
+2025-11-11 21:04:49,125 - mcp_server.semantic_layer_integration - INFO - Successfully built and cached list of 3 models
+2025-11-11 21:04:49,244 - mcp_server.semantic_layer_integration - INFO - Loaded 3 semantic models
