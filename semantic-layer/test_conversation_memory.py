@@ -4,10 +4,11 @@ Test script for conversation memory and Phase 4 enhancements
 """
 
 import asyncio
-from mcp_server.semantic_layer_integration import SemanticLayerManager
-from mcp_server.intelligence_layer import IntelligenceEngine
-from mcp_server.statistical_testing import StatisticalTester
+
 from mcp_server.conversation_memory import ConversationMemory
+from mcp_server.intelligence_layer import IntelligenceEngine
+from mcp_server.semantic_layer_integration import SemanticLayerManager
+from mcp_server.statistical_testing import StatisticalTester
 
 
 async def test_conversation_memory():
@@ -35,17 +36,17 @@ async def test_conversation_memory():
         "model": "users",
         "dimensions": ["plan_type"],
         "measures": ["conversion_rate", "total_users"],
-        "sql": "SELECT plan_type, COUNT(*) as total_users, AVG(conversion) as conversion_rate FROM users GROUP BY plan_type"
+        "sql": "SELECT plan_type, COUNT(*) as total_users, AVG(conversion) as conversion_rate FROM users GROUP BY plan_type",
     }
 
     result1 = {
         "data": [
             {"plan_type": "basic", "total_users": 596, "conversion_rate": 81.8},
             {"plan_type": "pro", "total_users": 116, "conversion_rate": 74.6},
-            {"plan_type": "enterprise", "total_users": 34, "conversion_rate": 74.4}
+            {"plan_type": "enterprise", "total_users": 34, "conversion_rate": 74.4},
         ],
         "row_count": 3,
-        "execution_time_ms": 25.5
+        "execution_time_ms": 25.5,
     }
 
     # Track interaction
@@ -53,7 +54,7 @@ async def test_conversation_memory():
         user_question="What's our conversion rate by plan type?",
         query_info=query1_info,
         result=result1,
-        insights=["Basic plan has highest conversion rate (81.8%)"]
+        insights=["Basic plan has highest conversion rate (81.8%)"],
     )
     print(f"✅ Tracked interaction {interaction1_id}")
 
@@ -64,24 +65,24 @@ async def test_conversation_memory():
         "model": "users",
         "dimensions": ["plan_type", "industry"],
         "measures": ["conversion_rate"],
-        "sql": "SELECT plan_type, industry, AVG(conversion) as conversion_rate FROM users GROUP BY plan_type, industry"
+        "sql": "SELECT plan_type, industry, AVG(conversion) as conversion_rate FROM users GROUP BY plan_type, industry",
     }
 
     result2 = {
         "data": [
             {"plan_type": "basic", "industry": "tech", "conversion_rate": 85.2},
             {"plan_type": "basic", "industry": "fintech", "conversion_rate": 78.4},
-            {"plan_type": "pro", "industry": "tech", "conversion_rate": 76.1}
+            {"plan_type": "pro", "industry": "tech", "conversion_rate": 76.1},
         ],
         "row_count": 3,
-        "execution_time_ms": 32.1
+        "execution_time_ms": 32.1,
     }
 
     interaction2_id = conversation_memory.add_interaction(
         user_question="Why does basic plan have better conversion?",
         query_info=query2_info,
         result=result2,
-        insights=["Need to analyze by industry to understand conversion patterns"]
+        insights=["Need to analyze by industry to understand conversion patterns"],
     )
     print(f"✅ Tracked interaction {interaction2_id}")
 
@@ -93,15 +94,19 @@ async def test_conversation_memory():
         "p_value": 0.003,
         "effect_size": 0.25,
         "effect_size_interpretation": "medium",
-        "significant": True
+        "significant": True,
     }
 
     conversation_memory.add_interaction(
         user_question="Is this difference statistically significant?",
-        query_info={"model": "statistical_test", "dimensions": ["plan_type"], "measures": ["conversion_rate"]},
+        query_info={
+            "model": "statistical_test",
+            "dimensions": ["plan_type"],
+            "measures": ["conversion_rate"],
+        },
         result={"data": [{"test": "statistical_analysis"}], "execution_time_ms": 15},
         insights=["Statistical analysis completed"],
-        statistical_analysis=mock_stats_result
+        statistical_analysis=mock_stats_result,
     )
 
     # Test conversation context retrieval
@@ -131,19 +136,23 @@ async def test_conversation_memory():
     patterns = conversation_memory.identify_analysis_patterns()
     print(f"✅ Discovered {len(patterns)} patterns:")
     for pattern in patterns:
-        print(f"  • {pattern['type']}: {pattern.get('description', 'Pattern detected')}")
+        print(
+            f"  • {pattern['type']}: {pattern.get('description', 'Pattern detected')}"
+        )
 
     # Test query optimization recommendations
     print("\n⚡ Testing Query Optimization")
     print("-" * 30)
 
-    recommendations = conversation_memory.get_query_recommendations({
-        "model": "users",
-        "dimensions": ["plan_type"],
-        "measures": ["conversion_rate"]
-    })
-    print(f"✅ Additional dimensions suggested: {recommendations.get('additional_dimensions', [])[:3]}")
-    print(f"⚡ Additional measures suggested: {recommendations.get('additional_measures', [])[:3]}")
+    recommendations = conversation_memory.get_query_recommendations(
+        {"model": "users", "dimensions": ["plan_type"], "measures": ["conversion_rate"]}
+    )
+    print(
+        f"✅ Additional dimensions suggested: {recommendations.get('additional_dimensions', [])[:3]}"
+    )
+    print(
+        f"⚡ Additional measures suggested: {recommendations.get('additional_measures', [])[:3]}"
+    )
 
     # Test conversation export
     print("\n📤 Testing Conversation Export")
@@ -169,40 +178,44 @@ async def test_conversation_memory():
         "model": "events",
         "dimensions": ["feature_name"],
         "measures": ["events_per_user"],
-        "sql": "SELECT feature_name, COUNT(*) / COUNT(DISTINCT user_id) as events_per_user FROM events GROUP BY feature_name"
+        "sql": "SELECT feature_name, COUNT(*) / COUNT(DISTINCT user_id) as events_per_user FROM events GROUP BY feature_name",
     }
 
     result4 = {
         "data": [
             {"feature_name": "dashboard_view", "events_per_user": 15.2},
             {"feature_name": "report_create", "events_per_user": 8.7},
-            {"feature_name": "data_upload", "events_per_user": 3.1}
+            {"feature_name": "data_upload", "events_per_user": 3.1},
         ],
         "row_count": 3,
-        "execution_time_ms": 18.9
+        "execution_time_ms": 18.9,
     }
 
     conversation_memory.add_interaction(
         user_question="Which features are most popular among high-converting users?",
         query_info=query4_info,
         result=result4,
-        insights=["Expanding analysis to feature usage patterns"]
+        insights=["Expanding analysis to feature usage patterns"],
     )
 
     # Check if context awareness improves suggestions
     new_suggestions = conversation_memory.suggest_contextual_next_steps()
     print(f"✅ Updated suggestions reflect conversation evolution")
-    print(f"📊 New suggestion types: {[s.get('type', 'general') for s in new_suggestions[:3]]}")
+    print(
+        f"📊 New suggestion types: {[s.get('type', 'general') for s in new_suggestions[:3]]}"
+    )
 
     # Verify conversation themes
     final_context = conversation_memory.get_conversation_context()
-    themes = final_context.get('conversation_themes', [])
+    themes = final_context.get("conversation_themes", [])
     print(f"🎯 Identified conversation themes: {themes}")
 
     print(f"\n🎉 Phase 4.1 Conversation Memory: All tests passed!")
     print(f"📊 Tracked {len(conversation_memory.interactions)} interactions")
     print(f"🧠 Context window: {conversation_memory.context_window_hours} hours")
-    print(f"💾 Memory efficiency: {len(conversation_memory.user_interests)} interest topics")
+    print(
+        f"💾 Memory efficiency: {len(conversation_memory.user_interests)} interest topics"
+    )
 
 
 if __name__ == "__main__":

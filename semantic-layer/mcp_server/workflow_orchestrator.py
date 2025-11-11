@@ -7,12 +7,12 @@ Builds on proven Phase 4.2 optimization engine for performance and Phase 4.1 con
 """
 
 import asyncio
-from datetime import datetime, timedelta
-from dataclasses import dataclass
-from typing import Any, Dict, List, Optional, Tuple, Union
-from enum import Enum
-import uuid
 import json
+import uuid
+from dataclasses import dataclass
+from datetime import datetime, timedelta
+from enum import Enum
+from typing import Any, Dict, List, Optional, Tuple, Union
 
 
 class WorkflowStatus(Enum):
@@ -35,6 +35,7 @@ class StepType(Enum):
 @dataclass
 class WorkflowStep:
     """Individual step in a multi-query workflow"""
+
     step_id: str
     step_type: StepType
     name: str
@@ -57,6 +58,7 @@ class WorkflowStep:
 @dataclass
 class WorkflowDefinition:
     """Complete workflow definition with metadata"""
+
     workflow_id: str
     name: str
     description: str
@@ -73,6 +75,7 @@ class WorkflowDefinition:
 @dataclass
 class WorkflowExecution:
     """Runtime execution state of a workflow"""
+
     workflow_id: str
     execution_id: str
     definition: WorkflowDefinition
@@ -128,9 +131,9 @@ class WorkflowOrchestrator:
                     parameters={
                         "model": "users",
                         "dimensions": ["plan_type"],
-                        "measures": ["conversion_rate", "total_users"]
+                        "measures": ["conversion_rate", "total_users"],
                     },
-                    dependencies=[]
+                    dependencies=[],
                 ),
                 WorkflowStep(
                     step_id="industry_breakdown",
@@ -140,9 +143,9 @@ class WorkflowOrchestrator:
                     parameters={
                         "model": "users",
                         "dimensions": ["plan_type", "industry"],
-                        "measures": ["conversion_rate", "total_users"]
+                        "measures": ["conversion_rate", "total_users"],
                     },
-                    dependencies=["baseline_conversion"]
+                    dependencies=["baseline_conversion"],
                 ),
                 WorkflowStep(
                     step_id="statistical_validation",
@@ -152,9 +155,9 @@ class WorkflowOrchestrator:
                     parameters={
                         "test_type": "chi_square",
                         "dimensions": ["plan_type", "industry"],
-                        "measures": ["conversion_rate"]
+                        "measures": ["conversion_rate"],
                     },
-                    dependencies=["baseline_conversion", "industry_breakdown"]
+                    dependencies=["baseline_conversion", "industry_breakdown"],
                 ),
                 WorkflowStep(
                     step_id="cohort_analysis",
@@ -164,9 +167,9 @@ class WorkflowOrchestrator:
                     parameters={
                         "model": "users",
                         "dimensions": ["plan_type", "signup_month"],
-                        "measures": ["conversion_rate", "total_users"]
+                        "measures": ["conversion_rate", "total_users"],
                     },
-                    dependencies=["baseline_conversion"]
+                    dependencies=["baseline_conversion"],
                 ),
                 WorkflowStep(
                     step_id="insight_synthesis",
@@ -175,11 +178,20 @@ class WorkflowOrchestrator:
                     description="Generate actionable insights from analysis",
                     parameters={
                         "analysis_type": "conversion_optimization",
-                        "focus_areas": ["plan_type_performance", "industry_patterns", "cohort_trends"]
+                        "focus_areas": [
+                            "plan_type_performance",
+                            "industry_patterns",
+                            "cohort_trends",
+                        ],
                     },
-                    dependencies=["baseline_conversion", "industry_breakdown", "statistical_validation", "cohort_analysis"]
-                )
-            ]
+                    dependencies=[
+                        "baseline_conversion",
+                        "industry_breakdown",
+                        "statistical_validation",
+                        "cohort_analysis",
+                    ],
+                ),
+            ],
         )
 
         # Template 2: Feature Usage Analysis
@@ -196,9 +208,9 @@ class WorkflowOrchestrator:
                     parameters={
                         "model": "events",
                         "dimensions": ["feature_name", "plan_type"],
-                        "measures": ["unique_users", "events_per_user"]
+                        "measures": ["unique_users", "events_per_user"],
                     },
-                    dependencies=[]
+                    dependencies=[],
                 ),
                 WorkflowStep(
                     step_id="power_user_analysis",
@@ -209,9 +221,9 @@ class WorkflowOrchestrator:
                         "model": "events",
                         "dimensions": ["feature_name"],
                         "measures": ["events_per_user", "unique_users"],
-                        "filters": {"user_segment": "power_users"}
+                        "filters": {"user_segment": "power_users"},
                     },
-                    dependencies=["feature_adoption"]
+                    dependencies=["feature_adoption"],
                 ),
                 WorkflowStep(
                     step_id="usage_correlation",
@@ -220,9 +232,9 @@ class WorkflowOrchestrator:
                     description="Identify correlated feature usage patterns",
                     parameters={
                         "analysis_type": "correlation",
-                        "features": ["feature_combinations", "user_behavior"]
+                        "features": ["feature_combinations", "user_behavior"],
                     },
-                    dependencies=["feature_adoption", "power_user_analysis"]
+                    dependencies=["feature_adoption", "power_user_analysis"],
                 ),
                 WorkflowStep(
                     step_id="churn_relationship",
@@ -232,9 +244,9 @@ class WorkflowOrchestrator:
                     parameters={
                         "model": "users",
                         "dimensions": ["feature_usage_level", "plan_type"],
-                        "measures": ["churn_rate", "total_users"]
+                        "measures": ["churn_rate", "total_users"],
                     },
-                    dependencies=["feature_adoption"]
+                    dependencies=["feature_adoption"],
                 ),
                 WorkflowStep(
                     step_id="feature_insights",
@@ -243,11 +255,20 @@ class WorkflowOrchestrator:
                     description="Generate feature development and engagement insights",
                     parameters={
                         "analysis_type": "feature_optimization",
-                        "focus_areas": ["adoption_drivers", "power_user_patterns", "churn_prevention"]
+                        "focus_areas": [
+                            "adoption_drivers",
+                            "power_user_patterns",
+                            "churn_prevention",
+                        ],
                     },
-                    dependencies=["feature_adoption", "power_user_analysis", "usage_correlation", "churn_relationship"]
-                )
-            ]
+                    dependencies=[
+                        "feature_adoption",
+                        "power_user_analysis",
+                        "usage_correlation",
+                        "churn_relationship",
+                    ],
+                ),
+            ],
         )
 
         # Template 3: Revenue Optimization Analysis
@@ -264,9 +285,9 @@ class WorkflowOrchestrator:
                     parameters={
                         "model": "revenue",
                         "dimensions": ["plan_type", "industry"],
-                        "measures": ["mrr", "arr", "avg_deal_size"]
+                        "measures": ["mrr", "arr", "avg_deal_size"],
                     },
-                    dependencies=[]
+                    dependencies=[],
                 ),
                 WorkflowStep(
                     step_id="growth_trends",
@@ -276,9 +297,9 @@ class WorkflowOrchestrator:
                     parameters={
                         "model": "revenue",
                         "dimensions": ["month", "plan_type"],
-                        "measures": ["mrr_growth_rate", "new_mrr", "churned_mrr"]
+                        "measures": ["mrr_growth_rate", "new_mrr", "churned_mrr"],
                     },
-                    dependencies=["revenue_baseline"]
+                    dependencies=["revenue_baseline"],
                 ),
                 WorkflowStep(
                     step_id="ltv_analysis",
@@ -288,9 +309,9 @@ class WorkflowOrchestrator:
                     parameters={
                         "model": "users",
                         "dimensions": ["plan_type", "industry", "acquisition_channel"],
-                        "measures": ["ltv", "payback_period", "total_users"]
+                        "measures": ["ltv", "payback_period", "total_users"],
                     },
-                    dependencies=["revenue_baseline"]
+                    dependencies=["revenue_baseline"],
                 ),
                 WorkflowStep(
                     step_id="expansion_opportunities",
@@ -299,9 +320,9 @@ class WorkflowOrchestrator:
                     description="Identify upsell and cross-sell opportunities",
                     parameters={
                         "analysis_type": "expansion_revenue",
-                        "segments": ["plan_type", "usage_level", "tenure"]
+                        "segments": ["plan_type", "usage_level", "tenure"],
                     },
-                    dependencies=["revenue_baseline", "ltv_analysis"]
+                    dependencies=["revenue_baseline", "ltv_analysis"],
                 ),
                 WorkflowStep(
                     step_id="revenue_insights",
@@ -310,23 +331,30 @@ class WorkflowOrchestrator:
                     description="Strategic revenue optimization recommendations",
                     parameters={
                         "analysis_type": "revenue_growth",
-                        "focus_areas": ["pricing_optimization", "segment_targeting", "expansion_revenue"]
+                        "focus_areas": [
+                            "pricing_optimization",
+                            "segment_targeting",
+                            "expansion_revenue",
+                        ],
                     },
-                    dependencies=["revenue_baseline", "growth_trends", "ltv_analysis", "expansion_opportunities"]
-                )
-            ]
+                    dependencies=[
+                        "revenue_baseline",
+                        "growth_trends",
+                        "ltv_analysis",
+                        "expansion_opportunities",
+                    ],
+                ),
+            ],
         )
 
         self.workflow_templates = {
             "conversion_deep_dive": conversion_analysis,
             "feature_usage_deep_dive": feature_usage_analysis,
-            "revenue_optimization": revenue_analysis
+            "revenue_optimization": revenue_analysis,
         }
 
     async def create_workflow(
-        self,
-        template_id: str,
-        customizations: Optional[Dict[str, Any]] = None
+        self, template_id: str, customizations: Optional[Dict[str, Any]] = None
     ) -> WorkflowExecution:
         """Create a new workflow execution from template"""
 
@@ -342,21 +370,20 @@ class WorkflowOrchestrator:
         execution = WorkflowExecution(
             workflow_id=template.workflow_id,
             execution_id=execution_id,
-            definition=workflow_def
+            definition=workflow_def,
         )
 
         self.active_workflows[execution_id] = execution
         return execution
 
     def _customize_workflow(
-        self,
-        template: WorkflowDefinition,
-        customizations: Dict[str, Any]
+        self, template: WorkflowDefinition, customizations: Dict[str, Any]
     ) -> WorkflowDefinition:
         """Apply customizations to workflow template"""
 
         # Deep copy template
         import copy
+
         custom_workflow = copy.deepcopy(template)
 
         # Apply step-level customizations
@@ -386,7 +413,7 @@ class WorkflowOrchestrator:
         semantic_manager,
         intelligence_engine,
         statistical_tester,
-        conversation_memory
+        conversation_memory,
     ) -> WorkflowExecution:
         """Execute a workflow with dependency resolution and parallel optimization"""
 
@@ -408,7 +435,7 @@ class WorkflowOrchestrator:
                 semantic_manager,
                 intelligence_engine,
                 statistical_tester,
-                conversation_memory
+                conversation_memory,
             )
 
             # Generate final workflow insights
@@ -428,7 +455,9 @@ class WorkflowOrchestrator:
 
         return execution
 
-    def _build_dependency_graph(self, steps: List[WorkflowStep]) -> Dict[str, List[str]]:
+    def _build_dependency_graph(
+        self, steps: List[WorkflowStep]
+    ) -> Dict[str, List[str]]:
         """Build dependency graph for step execution ordering"""
 
         graph = {}
@@ -444,7 +473,7 @@ class WorkflowOrchestrator:
         semantic_manager,
         intelligence_engine,
         statistical_tester,
-        conversation_memory
+        conversation_memory,
     ):
         """Execute workflow steps with dependency resolution and parallelization"""
 
@@ -455,13 +484,17 @@ class WorkflowOrchestrator:
             # Find steps ready to execute (all dependencies completed)
             ready_steps = []
             for step_id, dependencies in dependency_graph.items():
-                if step_id not in completed and all(dep in completed for dep in dependencies):
+                if step_id not in completed and all(
+                    dep in completed for dep in dependencies
+                ):
                     ready_steps.append(step_id)
 
             if not ready_steps:
                 # Check for circular dependencies
                 remaining = set(steps_by_id.keys()) - completed
-                raise RuntimeError(f"Circular dependency detected in steps: {remaining}")
+                raise RuntimeError(
+                    f"Circular dependency detected in steps: {remaining}"
+                )
 
             # Execute ready steps in parallel
             tasks = []
@@ -474,7 +507,7 @@ class WorkflowOrchestrator:
                         semantic_manager,
                         intelligence_engine,
                         statistical_tester,
-                        conversation_memory
+                        conversation_memory,
                     )
                 )
                 tasks.append((step_id, task))
@@ -501,7 +534,7 @@ class WorkflowOrchestrator:
         semantic_manager,
         intelligence_engine,
         statistical_tester,
-        conversation_memory
+        conversation_memory,
     ) -> Dict[str, Any]:
         """Execute individual workflow step"""
 
@@ -514,7 +547,9 @@ class WorkflowOrchestrator:
             result = None
 
             if step.step_type == StepType.QUERY:
-                result = await self._execute_query_step(step, semantic_manager, statistical_tester)
+                result = await self._execute_query_step(
+                    step, semantic_manager, statistical_tester
+                )
 
             elif step.step_type == StepType.STATISTICAL_TEST:
                 result = await self._execute_statistical_step(
@@ -522,13 +557,19 @@ class WorkflowOrchestrator:
                 )
 
             elif step.step_type == StepType.ANALYSIS:
-                result = await self._execute_analysis_step(step, execution, intelligence_engine)
+                result = await self._execute_analysis_step(
+                    step, execution, intelligence_engine
+                )
 
             elif step.step_type == StepType.INSIGHT_GENERATION:
-                result = await self._execute_insight_step(step, execution, intelligence_engine)
+                result = await self._execute_insight_step(
+                    step, execution, intelligence_engine
+                )
 
             elif step.step_type == StepType.COMPARISON:
-                result = await self._execute_comparison_step(step, execution, intelligence_engine)
+                result = await self._execute_comparison_step(
+                    step, execution, intelligence_engine
+                )
 
             elif step.step_type == StepType.AGGREGATION:
                 result = await self._execute_aggregation_step(step, execution)
@@ -539,7 +580,9 @@ class WorkflowOrchestrator:
             step.status = WorkflowStatus.COMPLETED
             step.result = result
             step.completed_at = datetime.now().isoformat()
-            step.execution_time_ms = (datetime.now() - start_time).total_seconds() * 1000
+            step.execution_time_ms = (
+                datetime.now() - start_time
+            ).total_seconds() * 1000
 
             return result
 
@@ -547,14 +590,13 @@ class WorkflowOrchestrator:
             step.status = WorkflowStatus.FAILED
             step.error = str(e)
             step.completed_at = datetime.now().isoformat()
-            step.execution_time_ms = (datetime.now() - start_time).total_seconds() * 1000
+            step.execution_time_ms = (
+                datetime.now() - start_time
+            ).total_seconds() * 1000
             raise
 
     async def _execute_query_step(
-        self,
-        step: WorkflowStep,
-        semantic_manager,
-        statistical_tester
+        self, step: WorkflowStep, semantic_manager, statistical_tester
     ) -> Dict[str, Any]:
         """Execute a query step"""
 
@@ -566,7 +608,7 @@ class WorkflowOrchestrator:
             dimensions=params.get("dimensions", []),
             measures=params.get("measures", []),
             filters=params.get("filters", {}),
-            limit=params.get("limit")
+            limit=params.get("limit"),
         )
 
         result = await semantic_manager.execute_query(query_info)
@@ -580,7 +622,7 @@ class WorkflowOrchestrator:
             "query_info": query_info,
             "result": result,
             "validation": validation,
-            "step_type": "query"
+            "step_type": "query",
         }
 
     async def _execute_statistical_step(
@@ -588,7 +630,7 @@ class WorkflowOrchestrator:
         step: WorkflowStep,
         execution: WorkflowExecution,
         statistical_tester,
-        intelligence_engine
+        intelligence_engine,
     ) -> Dict[str, Any]:
         """Execute a statistical analysis step"""
 
@@ -603,7 +645,9 @@ class WorkflowOrchestrator:
                     data_sources.append(dep_result["result"])
 
         if not data_sources:
-            raise ValueError(f"No data sources available for statistical step {step.step_id}")
+            raise ValueError(
+                f"No data sources available for statistical step {step.step_id}"
+            )
 
         # Combine data from multiple sources if needed
         combined_data = self._combine_statistical_data(data_sources)
@@ -613,27 +657,24 @@ class WorkflowOrchestrator:
             data=combined_data,
             comparison_type=params.get("test_type", "groups"),
             dimensions=params.get("dimensions", []),
-            measures=params.get("measures", [])
+            measures=params.get("measures", []),
         )
 
         # Generate interpretation
         interpretation = await intelligence_engine.interpret_statistical_results(
             test_results=test_results,
             dimensions=params.get("dimensions", []),
-            measures=params.get("measures", [])
+            measures=params.get("measures", []),
         )
 
         return {
             "test_results": test_results,
             "interpretation": interpretation,
-            "step_type": "statistical_test"
+            "step_type": "statistical_test",
         }
 
     async def _execute_analysis_step(
-        self,
-        step: WorkflowStep,
-        execution: WorkflowExecution,
-        intelligence_engine
+        self, step: WorkflowStep, execution: WorkflowExecution, intelligence_engine
     ) -> Dict[str, Any]:
         """Execute a custom analysis step"""
 
@@ -658,14 +699,11 @@ class WorkflowOrchestrator:
         return {
             "analysis_result": result,
             "analysis_type": analysis_type,
-            "step_type": "analysis"
+            "step_type": "analysis",
         }
 
     async def _execute_insight_step(
-        self,
-        step: WorkflowStep,
-        execution: WorkflowExecution,
-        intelligence_engine
+        self, step: WorkflowStep, execution: WorkflowExecution, intelligence_engine
     ) -> Dict[str, Any]:
         """Execute an insight generation step"""
 
@@ -689,14 +727,11 @@ class WorkflowOrchestrator:
             "insights": insights,
             "analysis_type": analysis_type,
             "focus_areas": focus_areas,
-            "step_type": "insight_generation"
+            "step_type": "insight_generation",
         }
 
     async def _execute_comparison_step(
-        self,
-        step: WorkflowStep,
-        execution: WorkflowExecution,
-        intelligence_engine
+        self, step: WorkflowStep, execution: WorkflowExecution, intelligence_engine
     ) -> Dict[str, Any]:
         """Execute a comparison analysis step"""
 
@@ -708,17 +743,14 @@ class WorkflowOrchestrator:
             if dep_step_id in execution.results:
                 comparison_data[dep_step_id] = execution.results[dep_step_id]
 
-        comparison_result = await self._perform_comparison_analysis(comparison_data, params)
+        comparison_result = await self._perform_comparison_analysis(
+            comparison_data, params
+        )
 
-        return {
-            "comparison_result": comparison_result,
-            "step_type": "comparison"
-        }
+        return {"comparison_result": comparison_result, "step_type": "comparison"}
 
     async def _execute_aggregation_step(
-        self,
-        step: WorkflowStep,
-        execution: WorkflowExecution
+        self, step: WorkflowStep, execution: WorkflowExecution
     ) -> Dict[str, Any]:
         """Execute an aggregation step"""
 
@@ -732,19 +764,14 @@ class WorkflowOrchestrator:
 
         aggregated_result = self._perform_aggregation(aggregation_data, params)
 
-        return {
-            "aggregated_result": aggregated_result,
-            "step_type": "aggregation"
-        }
+        return {"aggregated_result": aggregated_result, "step_type": "aggregation"}
 
-    def _combine_statistical_data(self, data_sources: List[Dict[str, Any]]) -> Dict[str, Any]:
+    def _combine_statistical_data(
+        self, data_sources: List[Dict[str, Any]]
+    ) -> Dict[str, Any]:
         """Combine multiple data sources for statistical analysis"""
 
-        combined = {
-            "data": [],
-            "row_count": 0,
-            "execution_time_ms": 0
-        }
+        combined = {"data": [], "row_count": 0, "execution_time_ms": 0}
 
         for source in data_sources:
             if "data" in source:
@@ -755,105 +782,520 @@ class WorkflowOrchestrator:
         return combined
 
     async def _perform_correlation_analysis(
-        self,
-        analysis_data: Dict[str, Any],
-        params: Dict[str, Any]
+        self, analysis_data: Dict[str, Any], params: Dict[str, Any]
     ) -> Dict[str, Any]:
-        """Perform correlation analysis on features"""
+        """Perform correlation analysis on features using real data"""
 
-        # Mock correlation analysis
         correlations = []
-        features = params.get("features", [])
+        insights = []
 
-        if "feature_combinations" in features:
-            correlations.append({
-                "feature_pair": ["dashboard_view", "report_create"],
-                "correlation": 0.72,
-                "significance": "high"
-            })
-            correlations.append({
-                "feature_pair": ["data_upload", "report_create"],
-                "correlation": 0.84,
-                "significance": "very_high"
-            })
+        # Extract numeric data from analysis_data for correlation computation
+        data_points = {}
+        feature_names = []
+
+        # Process data from previous workflow steps
+        for step_id, step_result in analysis_data.items():
+            if "result" in step_result and "data" in step_result["result"]:
+                data = step_result["result"]["data"]
+
+                # Extract numeric columns for correlation
+                if data and len(data) > 0:
+                    for row in data:
+                        for key, value in row.items():
+                            if isinstance(value, (int, float)):
+                                if key not in data_points:
+                                    data_points[key] = []
+                                    feature_names.append(key)
+                                data_points[key].append(float(value))
+
+        # Calculate correlations between numeric features
+        import math
+
+        if len(feature_names) >= 2:
+            for i, feature1 in enumerate(feature_names):
+                for j, feature2 in enumerate(feature_names[i + 1 :], i + 1):
+                    if (
+                        len(data_points[feature1]) == len(data_points[feature2])
+                        and len(data_points[feature1]) > 1
+                    ):
+                        correlation = self._calculate_correlation(
+                            data_points[feature1], data_points[feature2]
+                        )
+
+                        if (
+                            abs(correlation) > 0.3
+                        ):  # Only include meaningful correlations
+                            significance_level = "low"
+                            if abs(correlation) > 0.5:
+                                significance_level = "medium"
+                            if abs(correlation) > 0.7:
+                                significance_level = "high"
+                            if abs(correlation) > 0.85:
+                                significance_level = "very_high"
+
+                            correlations.append(
+                                {
+                                    "feature_pair": [feature1, feature2],
+                                    "correlation": round(correlation, 3),
+                                    "significance": significance_level,
+                                    "sample_size": len(data_points[feature1]),
+                                }
+                            )
+
+                            # Generate insights
+                            direction = "positive" if correlation > 0 else "negative"
+                            strength = significance_level.replace("_", " ")
+                            insights.append(
+                                f"{strength.capitalize()} {direction} correlation between {feature1} and {feature2} (r={correlation:.3f})"
+                            )
+
+        if not correlations:
+            insights.append(
+                "No significant correlations found in the available numeric data"
+            )
 
         return {
             "correlations": correlations,
-            "insights": [
-                "Strong correlation between data upload and report creation",
-                "Dashboard viewing predicts report creation behavior"
-            ]
+            "insights": insights,
+            "features_analyzed": feature_names,
+            "total_comparisons": len(correlations),
         }
 
     async def _perform_expansion_analysis(
-        self,
-        analysis_data: Dict[str, Any],
-        params: Dict[str, Any]
+        self, analysis_data: Dict[str, Any], params: Dict[str, Any]
     ) -> Dict[str, Any]:
-        """Analyze expansion revenue opportunities"""
+        """Analyze expansion revenue opportunities using real data"""
 
-        # Mock expansion analysis
-        segments = params.get("segments", [])
         opportunities = []
+        segments = params.get("segments", [])
 
-        if "plan_type" in segments:
-            opportunities.append({
-                "segment": "basic_plan_high_usage",
-                "expansion_potential": "high",
-                "estimated_additional_mrr": 15000,
-                "confidence": 0.85
-            })
+        # Analyze data from previous workflow steps
+        revenue_data = {}
+        usage_data = {}
+        plan_data = {}
 
-        if "usage_level" in segments:
-            opportunities.append({
-                "segment": "power_users_basic_plan",
-                "expansion_potential": "very_high",
-                "estimated_additional_mrr": 25000,
-                "confidence": 0.92
-            })
+        # Extract relevant metrics from analysis_data
+        for step_id, step_result in analysis_data.items():
+            if "result" in step_result and "data" in step_result["result"]:
+                data = step_result["result"]["data"]
+
+                for row in data:
+                    # Look for revenue-related metrics
+                    for key, value in row.items():
+                        if any(
+                            revenue_term in key.lower()
+                            for revenue_term in [
+                                "revenue",
+                                "ltv",
+                                "value",
+                                "mrr",
+                                "arr",
+                            ]
+                        ):
+                            if key not in revenue_data:
+                                revenue_data[key] = []
+                            if isinstance(value, (int, float)):
+                                revenue_data[key].append(value)
+
+                        # Look for usage-related metrics
+                        if any(
+                            usage_term in key.lower()
+                            for usage_term in [
+                                "usage",
+                                "activity",
+                                "sessions",
+                                "events",
+                            ]
+                        ):
+                            if key not in usage_data:
+                                usage_data[key] = []
+                            if isinstance(value, (int, float)):
+                                usage_data[key].append(value)
+
+                        # Look for plan information
+                        if any(
+                            plan_term in key.lower()
+                            for plan_term in ["plan", "tier", "subscription"]
+                        ):
+                            if key not in plan_data:
+                                plan_data[key] = []
+                            plan_data[key].append(str(value))
+
+        # Identify expansion opportunities based on real data patterns
+        if revenue_data and usage_data:
+            # Calculate quartiles for revenue and usage metrics
+            for revenue_metric, revenue_values in revenue_data.items():
+                if len(revenue_values) > 4:  # Need enough data points
+                    revenue_values.sort()
+                    q1_revenue = revenue_values[len(revenue_values) // 4]
+                    q3_revenue = revenue_values[3 * len(revenue_values) // 4]
+                    median_revenue = revenue_values[len(revenue_values) // 2]
+
+                    for usage_metric, usage_values in usage_data.items():
+                        if len(usage_values) == len(revenue_values):
+                            usage_values_sorted = sorted(usage_values)
+                            q3_usage = usage_values_sorted[
+                                3 * len(usage_values_sorted) // 4
+                            ]
+
+                            # High usage, potentially lower revenue = expansion opportunity
+                            high_usage_low_revenue_count = sum(
+                                1
+                                for i in range(len(usage_values))
+                                if usage_values[i] > q3_usage
+                                and revenue_values[i] < median_revenue
+                            )
+
+                            if high_usage_low_revenue_count > 0:
+                                # Estimate expansion potential
+                                potential_increase = median_revenue - (
+                                    sum(
+                                        revenue_values[i]
+                                        for i in range(len(revenue_values))
+                                        if usage_values[i] > q3_usage
+                                        and revenue_values[i] < median_revenue
+                                    )
+                                    / max(high_usage_low_revenue_count, 1)
+                                )
+
+                                estimated_additional_revenue = (
+                                    potential_increase * high_usage_low_revenue_count
+                                )
+
+                                confidence = min(
+                                    0.95,
+                                    max(
+                                        0.5,
+                                        high_usage_low_revenue_count
+                                        / len(revenue_values),
+                                    ),
+                                )
+
+                                expansion_potential = "low"
+                                if confidence > 0.7:
+                                    expansion_potential = "medium"
+                                if confidence > 0.8:
+                                    expansion_potential = "high"
+                                if confidence > 0.9:
+                                    expansion_potential = "very_high"
+
+                                opportunities.append(
+                                    {
+                                        "segment": f"high_{usage_metric}_low_{revenue_metric}",
+                                        "expansion_potential": expansion_potential,
+                                        "estimated_additional_revenue": round(
+                                            estimated_additional_revenue, 2
+                                        ),
+                                        "confidence": round(confidence, 3),
+                                        "affected_customers": high_usage_low_revenue_count,
+                                        "description": f"Customers with high {usage_metric} but low {revenue_metric}",
+                                    }
+                                )
+
+        # If no data-driven opportunities found, provide analytical framework
+        if not opportunities:
+            opportunities.append(
+                {
+                    "segment": "insufficient_data",
+                    "expansion_potential": "unknown",
+                    "estimated_additional_revenue": 0,
+                    "confidence": 0,
+                    "affected_customers": 0,
+                    "description": "Insufficient data for expansion analysis - need revenue and usage metrics",
+                }
+            )
 
         return {
             "expansion_opportunities": opportunities,
-            "total_opportunity_mrr": sum(opp["estimated_additional_mrr"] for opp in opportunities)
+            "total_opportunity_revenue": sum(
+                opp.get("estimated_additional_revenue", 0) for opp in opportunities
+            ),
+            "segments_analyzed": len(opportunities),
+            "data_sources": {
+                "revenue_metrics": list(revenue_data.keys()),
+                "usage_metrics": list(usage_data.keys()),
+                "plan_data": list(plan_data.keys()),
+            },
         }
 
     async def _perform_general_analysis(
-        self,
-        analysis_data: Dict[str, Any],
-        params: Dict[str, Any]
+        self, analysis_data: Dict[str, Any], params: Dict[str, Any]
     ) -> Dict[str, Any]:
-        """Perform general analysis"""
+        """Perform general analysis using real data"""
+
+        key_findings = []
+        metrics_analyzed = []
+        data_quality_issues = []
+        trends = []
+
+        # Count total data points and analyze structure
+        total_data_points = 0
+        total_dimensions = set()
+        total_measures = set()
+
+        for step_id, step_result in analysis_data.items():
+            if "result" in step_result:
+                result = step_result["result"]
+
+                # Count data points
+                if "data" in result and result["data"]:
+                    data_points = len(result["data"])
+                    total_data_points += data_points
+
+                    # Analyze data structure
+                    if data_points > 0:
+                        sample_row = result["data"][0]
+                        for key, value in sample_row.items():
+                            if isinstance(value, (int, float)):
+                                total_measures.add(key)
+                                metrics_analyzed.append(key)
+                            else:
+                                total_dimensions.add(key)
+
+                        # Check for data quality issues
+                        null_count = sum(
+                            1
+                            for row in result["data"]
+                            for value in row.values()
+                            if value is None or value == ""
+                        )
+                        if null_count > data_points * 0.1:  # More than 10% null values
+                            data_quality_issues.append(
+                                f"Step {step_id}: High null value rate ({null_count}/{data_points * len(sample_row)} values)"
+                            )
+
+                        # Analyze trends in numeric columns
+                        for measure in total_measures:
+                            values = [
+                                row.get(measure, 0)
+                                for row in result["data"]
+                                if isinstance(row.get(measure), (int, float))
+                            ]
+                            if len(values) > 3:
+                                # Simple trend analysis
+                                first_half_avg = sum(values[: len(values) // 2]) / max(
+                                    len(values) // 2, 1
+                                )
+                                second_half_avg = sum(values[len(values) // 2 :]) / max(
+                                    len(values) - len(values) // 2, 1
+                                )
+
+                                if second_half_avg > first_half_avg * 1.1:
+                                    trends.append(
+                                        f"Upward trend in {measure}: {first_half_avg:.2f} → {second_half_avg:.2f}"
+                                    )
+                                elif second_half_avg < first_half_avg * 0.9:
+                                    trends.append(
+                                        f"Downward trend in {measure}: {first_half_avg:.2f} → {second_half_avg:.2f}"
+                                    )
+
+                # Track execution performance
+                execution_time = result.get("execution_time_ms", 0)
+                if execution_time > 1000:  # More than 1 second
+                    data_quality_issues.append(
+                        f"Step {step_id}: Slow execution time ({execution_time:.0f}ms)"
+                    )
+
+        # Generate findings based on analysis
+        if total_data_points > 0:
+            key_findings.append(
+                f"Analyzed {total_data_points} total data points across {len(analysis_data)} workflow steps"
+            )
+
+        if len(total_measures) > 0:
+            key_findings.append(
+                f"Identified {len(total_measures)} numeric measures: {', '.join(list(total_measures)[:5])}"
+            )
+
+        if len(total_dimensions) > 0:
+            key_findings.append(
+                f"Found {len(total_dimensions)} categorical dimensions: {', '.join(list(total_dimensions)[:5])}"
+            )
+
+        if data_quality_issues:
+            key_findings.append(
+                f"Data quality issues detected in {len(data_quality_issues)} areas"
+            )
+
+        if trends:
+            key_findings.append(
+                f"Identified {len(trends)} significant trends in the data"
+            )
+        else:
+            key_findings.append(
+                "No significant trends detected in the current analysis"
+            )
 
         return {
-            "analysis_summary": "General analysis completed",
-            "data_points_analyzed": len(analysis_data),
-            "key_findings": ["Analysis pattern detected", "Data quality verified"]
+            "analysis_summary": f"General analysis completed on {len(analysis_data)} workflow steps",
+            "data_points_analyzed": total_data_points,
+            "key_findings": key_findings,
+            "metrics_discovered": list(total_measures),
+            "dimensions_discovered": list(total_dimensions),
+            "data_quality_issues": data_quality_issues,
+            "trends_identified": trends,
+            "analysis_coverage": {
+                "total_steps": len(analysis_data),
+                "steps_with_data": sum(
+                    1
+                    for step_result in analysis_data.values()
+                    if "result" in step_result and "data" in step_result["result"]
+                ),
+                "numeric_measures": len(total_measures),
+                "categorical_dimensions": len(total_dimensions),
+            },
         }
 
     async def _perform_comparison_analysis(
-        self,
-        comparison_data: Dict[str, Any],
-        params: Dict[str, Any]
+        self, comparison_data: Dict[str, Any], params: Dict[str, Any]
     ) -> Dict[str, Any]:
-        """Perform comparison analysis"""
+        """Perform comparison analysis using real data"""
+
+        comparisons = []
+        significant_differences = []
+
+        # Extract comparison groups from the data
+        groups_data = {}
+        comparison_dimensions = params.get("dimensions", [])
+
+        # Organize data by comparison groups
+        for step_id, step_result in comparison_data.items():
+            if "result" in step_result and "data" in step_result["result"]:
+                data = step_result["result"]["data"]
+
+                if data and len(data) > 0:
+                    # Group data by first available comparison dimension
+                    for row in data:
+                        group_key = "unknown_group"
+
+                        # Find the comparison dimension
+                        for dim in comparison_dimensions:
+                            if dim in row:
+                                group_key = f"{dim}_{row[dim]}"
+                                break
+
+                        if group_key not in groups_data:
+                            groups_data[group_key] = {"measures": {}, "count": 0}
+
+                        groups_data[group_key]["count"] += 1
+
+                        # Collect numeric measures for comparison
+                        for key, value in row.items():
+                            if isinstance(value, (int, float)):
+                                if key not in groups_data[group_key]["measures"]:
+                                    groups_data[group_key]["measures"][key] = []
+                                groups_data[group_key]["measures"][key].append(value)
+
+        # Perform comparisons between groups
+        group_names = list(groups_data.keys())
+        if len(group_names) >= 2:
+            for i, group1 in enumerate(group_names):
+                for j, group2 in enumerate(group_names[i + 1 :], i + 1):
+                    group1_data = groups_data[group1]
+                    group2_data = groups_data[group2]
+
+                    # Compare common measures
+                    common_measures = set(group1_data["measures"].keys()) & set(
+                        group2_data["measures"].keys()
+                    )
+
+                    for measure in common_measures:
+                        values1 = group1_data["measures"][measure]
+                        values2 = group2_data["measures"][measure]
+
+                        if len(values1) > 0 and len(values2) > 0:
+                            avg1 = sum(values1) / len(values1)
+                            avg2 = sum(values2) / len(values2)
+
+                            # Calculate percentage difference
+                            if avg1 != 0:
+                                pct_difference = ((avg2 - avg1) / avg1) * 100
+                            else:
+                                pct_difference = 0
+
+                            # Determine significance (simple threshold-based)
+                            significance_level = "not_significant"
+                            if abs(pct_difference) > 5:
+                                significance_level = "small"
+                            if abs(pct_difference) > 15:
+                                significance_level = "medium"
+                            if abs(pct_difference) > 30:
+                                significance_level = "large"
+
+                            comparison = {
+                                "groups": [group1, group2],
+                                "measure": measure,
+                                "group1_avg": round(avg1, 3),
+                                "group2_avg": round(avg2, 3),
+                                "difference": round(avg2 - avg1, 3),
+                                "percent_change": round(pct_difference, 2),
+                                "significance": significance_level,
+                                "sample_sizes": [len(values1), len(values2)],
+                            }
+
+                            comparisons.append(comparison)
+
+                            # Generate significant differences
+                            if significance_level in ["medium", "large"]:
+                                direction = (
+                                    "increase" if pct_difference > 0 else "decrease"
+                                )
+                                significant_differences.append(
+                                    f"{measure} shows {abs(pct_difference):.1f}% {direction} from {group1} to {group2}"
+                                )
+
+        if not significant_differences:
+            if len(groups_data) < 2:
+                significant_differences.append(
+                    "Insufficient comparison groups found in the data"
+                )
+            else:
+                significant_differences.append(
+                    "No statistically significant differences detected between groups"
+                )
 
         return {
-            "comparison_summary": "Comparison analysis completed",
-            "comparisons_made": len(comparison_data),
-            "significant_differences": ["Metric A shows 25% improvement", "Metric B stable across segments"]
+            "comparison_summary": f"Comparison analysis completed between {len(group_names)} groups",
+            "comparisons_made": len(comparisons),
+            "detailed_comparisons": comparisons,
+            "significant_differences": significant_differences,
+            "groups_analyzed": group_names,
+            "total_data_points": sum(group["count"] for group in groups_data.values()),
         }
 
+    def _calculate_correlation(
+        self, x_values: List[float], y_values: List[float]
+    ) -> float:
+        """Calculate Pearson correlation coefficient"""
+        if len(x_values) != len(y_values) or len(x_values) < 2:
+            return 0.0
+
+        n = len(x_values)
+        x_mean = sum(x_values) / n
+        y_mean = sum(y_values) / n
+
+        numerator = sum(
+            (x_values[i] - x_mean) * (y_values[i] - y_mean) for i in range(n)
+        )
+        x_variance = sum((x_values[i] - x_mean) ** 2 for i in range(n))
+        y_variance = sum((y_values[i] - y_mean) ** 2 for i in range(n))
+
+        denominator = (x_variance * y_variance) ** 0.5
+
+        if denominator == 0:
+            return 0.0
+
+        return numerator / denominator
+
     def _perform_aggregation(
-        self,
-        aggregation_data: Dict[str, Any],
-        params: Dict[str, Any]
+        self, aggregation_data: Dict[str, Any], params: Dict[str, Any]
     ) -> Dict[str, Any]:
         """Perform data aggregation"""
 
         return {
             "aggregation_summary": "Data aggregation completed",
             "total_records": sum(1 for _ in aggregation_data.values()),
-            "aggregated_metrics": ["Total sum calculated", "Averages computed"]
+            "aggregated_metrics": ["Total sum calculated", "Averages computed"],
         }
 
     async def _generate_comprehensive_insights(
@@ -861,7 +1303,7 @@ class WorkflowOrchestrator:
         all_results: Dict[str, Any],
         analysis_type: str,
         focus_areas: List[str],
-        intelligence_engine
+        intelligence_engine,
     ) -> List[str]:
         """Generate comprehensive insights from all workflow results"""
 
@@ -869,33 +1311,41 @@ class WorkflowOrchestrator:
 
         # Analysis type specific insights
         if analysis_type == "conversion_optimization":
-            insights.extend([
-                "Basic plan shows highest conversion rate (81.8%) across all industries",
-                "Tech industry customers convert 15% better than average",
-                "Statistical significance confirmed for plan type differences (p<0.001)",
-                "Recent cohorts show improving conversion trends"
-            ])
+            insights.extend(
+                [
+                    "Basic plan shows highest conversion rate (81.8%) across all industries",
+                    "Tech industry customers convert 15% better than average",
+                    "Statistical significance confirmed for plan type differences (p<0.001)",
+                    "Recent cohorts show improving conversion trends",
+                ]
+            )
 
         elif analysis_type == "feature_optimization":
-            insights.extend([
-                "Data upload feature strongly predicts user engagement",
-                "Power users create 3x more reports than average users",
-                "Feature adoption correlates with lower churn rates",
-                "Dashboard customization is key engagement driver"
-            ])
+            insights.extend(
+                [
+                    "Data upload feature strongly predicts user engagement",
+                    "Power users create 3x more reports than average users",
+                    "Feature adoption correlates with lower churn rates",
+                    "Dashboard customization is key engagement driver",
+                ]
+            )
 
         elif analysis_type == "revenue_growth":
-            insights.extend([
-                "Enterprise plans show highest LTV but lowest adoption",
-                "Expansion revenue opportunity: $40K additional MRR identified",
-                "Industry targeting could improve deal sizes by 25%",
-                "Monthly cohorts show consistent revenue growth trends"
-            ])
+            insights.extend(
+                [
+                    "Enterprise plans show highest LTV but lowest adoption",
+                    "Expansion revenue opportunity: $40K additional MRR identified",
+                    "Industry targeting could improve deal sizes by 25%",
+                    "Monthly cohorts show consistent revenue growth trends",
+                ]
+            )
 
         # Focus area specific insights
         for focus_area in focus_areas:
             if focus_area == "plan_type_performance":
-                insights.append("Basic plan provides best customer acquisition efficiency")
+                insights.append(
+                    "Basic plan provides best customer acquisition efficiency"
+                )
             elif focus_area == "industry_patterns":
                 insights.append("Fintech segment shows highest expansion potential")
             elif focus_area == "cohort_trends":
@@ -903,11 +1353,15 @@ class WorkflowOrchestrator:
 
         # Cross-step insight synthesis
         if len(all_results) > 3:
-            insights.append(f"Multi-dimensional analysis across {len(all_results)} analytical steps reveals consistent patterns")
+            insights.append(
+                f"Multi-dimensional analysis across {len(all_results)} analytical steps reveals consistent patterns"
+            )
 
         return insights
 
-    async def _generate_workflow_insights(self, execution: WorkflowExecution) -> List[str]:
+    async def _generate_workflow_insights(
+        self, execution: WorkflowExecution
+    ) -> List[str]:
         """Generate high-level insights about the workflow execution"""
 
         insights = []
@@ -916,19 +1370,24 @@ class WorkflowOrchestrator:
         completed_steps = len(execution.completed_steps)
         failed_steps = len(execution.failed_steps)
 
-        insights.append(f"Workflow completed {completed_steps}/{total_steps} steps successfully")
+        insights.append(
+            f"Workflow completed {completed_steps}/{total_steps} steps successfully"
+        )
 
         if failed_steps > 0:
             insights.append(f"Warning: {failed_steps} steps failed during execution")
 
         # Execution time insights
         total_time = sum(
-            step.execution_time_ms for step in execution.definition.steps
+            step.execution_time_ms
+            for step in execution.definition.steps
             if step.execution_time_ms > 0
         )
 
         if total_time > 0:
-            insights.append(f"Total execution time: {total_time:.1f}ms across all steps")
+            insights.append(
+                f"Total execution time: {total_time:.1f}ms across all steps"
+            )
 
             # Performance insights
             if total_time < 5000:  # Less than 5 seconds
@@ -963,7 +1422,7 @@ class WorkflowOrchestrator:
             "failed_steps": len(execution.failed_steps),
             "started_at": execution.started_at,
             "completed_at": execution.completed_at,
-            "insights": execution.insights
+            "insights": execution.insights,
         }
 
     def list_available_workflows(self) -> Dict[str, Any]:
@@ -975,13 +1434,13 @@ class WorkflowOrchestrator:
                 "name": template.name,
                 "description": template.description,
                 "steps": len(template.steps),
-                "estimated_duration": template.estimated_duration_seconds
+                "estimated_duration": template.estimated_duration_seconds,
             }
 
         return {
             "available_templates": templates,
             "active_workflows": len(self.active_workflows),
-            "completed_workflows": len(self.workflow_history)
+            "completed_workflows": len(self.workflow_history),
         }
 
     async def cancel_workflow(self, execution_id: str) -> Dict[str, Any]:
@@ -1002,5 +1461,5 @@ class WorkflowOrchestrator:
             "execution_id": execution_id,
             "status": "cancelled",
             "completed_steps": len(execution.completed_steps),
-            "total_steps": len(execution.definition.steps)
+            "total_steps": len(execution.definition.steps),
         }

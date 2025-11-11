@@ -6,12 +6,14 @@ Implements automatic statistical testing, sample size validation, and effect siz
 to provide rigorous analysis and prevent unreliable claims.
 """
 
+import warnings
+from typing import Any, Dict, List, Optional, Tuple
+
 import numpy as np
 import pandas as pd
-from typing import Any, Dict, List, Optional, Tuple
 from scipy import stats
-import warnings
-warnings.filterwarnings('ignore')
+
+warnings.filterwarnings("ignore")
 
 
 class StatisticalTester:
@@ -23,9 +25,7 @@ class StatisticalTester:
         self.default_alpha = 0.05
 
     async def validate_result(
-        self,
-        result: Dict[str, Any],
-        dimensions: List[str]
+        self, result: Dict[str, Any], dimensions: List[str]
     ) -> Dict[str, Any]:
         """
         Validate query results for statistical reliability.
@@ -37,7 +37,7 @@ class StatisticalTester:
             "valid": True,
             "warnings": [],
             "sample_sizes": {},
-            "data_quality": {}
+            "data_quality": {},
         }
 
         data = result.get("data", [])
@@ -54,7 +54,9 @@ class StatisticalTester:
         validation["sample_sizes"]["total"] = total_rows
 
         if total_rows < self.min_sample_size:
-            validation["warnings"].append(f"Small sample size (n={total_rows}, recommend n≥{self.min_sample_size})")
+            validation["warnings"].append(
+                f"Small sample size (n={total_rows}, recommend n≥{self.min_sample_size})"
+            )
 
         # Check sample sizes for grouped data
         if dimensions:
@@ -64,15 +66,21 @@ class StatisticalTester:
                 validation["sample_sizes"]["groups"] = group_sizes
 
                 # Check for small groups
-                small_groups = [k for k, v in group_sizes.items() if v < self.min_sample_size]
+                small_groups = [
+                    k for k, v in group_sizes.items() if v < self.min_sample_size
+                ]
                 if small_groups:
-                    validation["warnings"].append(f"Small groups: {small_groups} (n<{self.min_sample_size})")
+                    validation["warnings"].append(
+                        f"Small groups: {small_groups} (n<{self.min_sample_size})"
+                    )
 
                 # Check for very unbalanced groups
                 min_size = min(group_sizes.values())
                 max_size = max(group_sizes.values())
                 if max_size / min_size > 10:
-                    validation["warnings"].append("Highly unbalanced groups - interpret comparisons carefully")
+                    validation["warnings"].append(
+                        "Highly unbalanced groups - interpret comparisons carefully"
+                    )
 
         # Check for missing values
         missing_cols = []
@@ -82,7 +90,7 @@ class StatisticalTester:
                 missing_pct = (missing_count / len(df)) * 100
                 validation["data_quality"][col] = {
                     "missing_count": missing_count,
-                    "missing_percent": round(missing_pct, 1)
+                    "missing_percent": round(missing_pct, 1),
                 }
                 if missing_pct > 10:
                     missing_cols.append(f"{col} ({missing_pct:.1f}% missing)")
@@ -93,10 +101,7 @@ class StatisticalTester:
         return validation
 
     async def auto_test_comparison(
-        self,
-        result: Dict[str, Any],
-        dimensions: List[str],
-        measures: List[str]
+        self, result: Dict[str, Any], dimensions: List[str], measures: List[str]
     ) -> Optional[Dict[str, Any]]:
         """
         Automatically run appropriate statistical tests when comparing groups.
@@ -144,7 +149,9 @@ class StatisticalTester:
         # Choose appropriate test
         if len(group_data) == 2:
             # Two groups: t-test or Mann-Whitney U
-            test_result = await self._two_group_test(group_data[0], group_data[1], group_names)
+            test_result = await self._two_group_test(
+                group_data[0], group_data[1], group_names
+            )
         else:
             # Multiple groups: ANOVA or Kruskal-Wallis
             test_result = await self._multiple_group_test(group_data, group_names)
@@ -157,10 +164,7 @@ class StatisticalTester:
         return test_result
 
     async def _two_group_test(
-        self,
-        group1: np.ndarray,
-        group2: np.ndarray,
-        group_names: List[str]
+        self, group1: np.ndarray, group2: np.ndarray, group_names: List[str]
     ) -> Dict[str, Any]:
         """Run appropriate test for two groups"""
 
@@ -188,7 +192,9 @@ class StatisticalTester:
                 test_type = "welch_t_test"
         else:
             # Use Mann-Whitney U test
-            statistic, p_value = stats.mannwhitneyu(group1, group2, alternative='two-sided')
+            statistic, p_value = stats.mannwhitneyu(
+                group1, group2, alternative="two-sided"
+            )
             test_type = "mann_whitney_u"
 
         # Calculate effect size (Cohen's d for parametric, rank-biserial correlation for non-parametric)
@@ -215,14 +221,12 @@ class StatisticalTester:
             "group_stds": [float(np.std(group1)), float(np.std(group2))],
             "assumptions": {
                 "normality": normal1 and normal2,
-                "equal_variance": equal_var
-            }
+                "equal_variance": equal_var,
+            },
         }
 
     async def _multiple_group_test(
-        self,
-        group_data: List[np.ndarray],
-        group_names: List[str]
+        self, group_data: List[np.ndarray], group_names: List[str]
     ) -> Dict[str, Any]:
         """Run appropriate test for multiple groups"""
 
@@ -256,7 +260,9 @@ class StatisticalTester:
         else:
             # For non-parametric, use epsilon-squared approximation
             total_n = sum(len(group) for group in group_data)
-            eta_squared = (statistic - len(group_data) + 1) / (total_n - len(group_data))
+            eta_squared = (statistic - len(group_data) + 1) / (
+                total_n - len(group_data)
+            )
             eta_squared = max(0, eta_squared)  # Ensure non-negative
             effect_size_interpretation = self._interpret_eta_squared(eta_squared)
 
@@ -270,10 +276,7 @@ class StatisticalTester:
             "group_names": group_names,
             "group_means": [float(np.mean(group)) for group in group_data],
             "group_stds": [float(np.std(group)) for group in group_data],
-            "assumptions": {
-                "normality": all_normal,
-                "equal_variance": equal_var
-            }
+            "assumptions": {"normality": all_normal, "equal_variance": equal_var},
         }
 
     async def run_significance_tests(
@@ -281,7 +284,7 @@ class StatisticalTester:
         data: Dict[str, Any],
         comparison_type: str = "groups",
         dimensions: List[str] = [],
-        measures: List[str] = []
+        measures: List[str] = [],
     ) -> Dict[str, Any]:
         """
         Run statistical significance tests on data.
@@ -306,10 +309,7 @@ class StatisticalTester:
             return {"error": f"Unknown comparison type: {comparison_type}"}
 
     async def _correlation_test(
-        self,
-        data: Dict[str, Any],
-        dimensions: List[str],
-        measures: List[str]
+        self, data: Dict[str, Any], dimensions: List[str], measures: List[str]
     ) -> Optional[Dict[str, Any]]:
         """Test correlation between variables"""
 
@@ -343,14 +343,11 @@ class StatisticalTester:
             "spearman_p": float(p_spearman),
             "significant": min(p_pearson, p_spearman) < self.default_alpha,
             "sample_size": len(clean_df),
-            "variables": [var1, var2]
+            "variables": [var1, var2],
         }
 
     async def _trend_test(
-        self,
-        data: Dict[str, Any],
-        dimensions: List[str],
-        measures: List[str]
+        self, data: Dict[str, Any], dimensions: List[str], measures: List[str]
     ) -> Optional[Dict[str, Any]]:
         """Test for trend over time"""
 
@@ -373,17 +370,19 @@ class StatisticalTester:
         values = df_sorted[measure_var].values
 
         # Linear regression for trend
-        slope, intercept, r_value, p_value, std_err = stats.linregress(time_index, values)
+        slope, intercept, r_value, p_value, std_err = stats.linregress(
+            time_index, values
+        )
 
         # Mann-Kendall test for monotonic trend
         def mann_kendall_test(x):
             n = len(x)
             s = 0
-            for i in range(n-1):
-                for j in range(i+1, n):
+            for i in range(n - 1):
+                for j in range(i + 1, n):
                     s += np.sign(x[j] - x[i])
 
-            var_s = n*(n-1)*(2*n+5)/18
+            var_s = n * (n - 1) * (2 * n + 5) / 18
             if s > 0:
                 z = (s - 1) / np.sqrt(var_s)
             elif s < 0:
@@ -404,8 +403,10 @@ class StatisticalTester:
             "mann_kendall_z": float(mk_z),
             "mann_kendall_p": float(mk_p),
             "significant": min(p_value, mk_p) < self.default_alpha,
-            "trend_direction": "increasing" if slope > 0 else "decreasing" if slope < 0 else "flat",
-            "sample_size": len(df_sorted)
+            "trend_direction": (
+                "increasing" if slope > 0 else "decreasing" if slope < 0 else "flat"
+            ),
+            "sample_size": len(df_sorted),
         }
 
     def _calculate_cohens_d(self, group1: np.ndarray, group2: np.ndarray) -> float:
@@ -451,10 +452,12 @@ class StatisticalTester:
         grand_mean = np.mean(all_data)
 
         # Between-group sum of squares
-        ss_between = sum(len(group) * (np.mean(group) - grand_mean)**2 for group in group_data)
+        ss_between = sum(
+            len(group) * (np.mean(group) - grand_mean) ** 2 for group in group_data
+        )
 
         # Total sum of squares
-        ss_total = np.sum((all_data - grand_mean)**2)
+        ss_total = np.sum((all_data - grand_mean) ** 2)
 
         # Eta-squared
         eta_squared = ss_between / ss_total if ss_total > 0 else 0

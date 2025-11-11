@@ -4,8 +4,8 @@ Entry point script for AI Analyst MCP Server
 This ensures the module path is set up correctly for Claude Desktop
 """
 
-import sys
 import os
+import sys
 from pathlib import Path
 
 # Add the current directory to Python path so mcp_server module can be found

@@ -4,8 +4,9 @@ Test script for MCP server functionality
 """
 
 import asyncio
-from mcp_server.semantic_layer_integration import SemanticLayerManager
+
 from mcp_server.intelligence_layer import IntelligenceEngine
+from mcp_server.semantic_layer_integration import SemanticLayerManager
 from mcp_server.statistical_testing import StatisticalTester
 
 
@@ -29,9 +30,9 @@ async def main():
         # Test 2: Health check
         print("\n2. Testing health check...")
         health = await semantic_manager.health_check()
-        is_healthy = health.get('database_connected', False)
+        is_healthy = health.get("database_connected", False)
         print(f"✅ Health check: {'healthy' if is_healthy else 'unhealthy'}")
-        if 'database_info' in health:
+        if "database_info" in health:
             print(f"   Database size: {health['database_info']['file_size_mb']}MB")
         print(f"   Models loaded: {health.get('models_count', 0)}")
 
@@ -41,7 +42,9 @@ async def main():
         print(f"✅ Found {len(models)} models:")
         for model in models:
             print(f"   - {model['name']}: {model['description']}")
-            print(f"     Dimensions: {model['dimensions_count']}, Measures: {model['measures_count']}")
+            print(
+                f"     Dimensions: {model['dimensions_count']}, Measures: {model['measures_count']}"
+            )
 
         # Test 4: Get model schema
         print("\n4. Testing model schema retrieval...")
@@ -55,16 +58,18 @@ async def main():
         query_info = await semantic_manager.build_query(
             model="users",
             dimensions=["plan_type"],
-            measures=["total_users", "conversion_rate"]
+            measures=["total_users", "conversion_rate"],
         )
         print(f"✅ Query built: {query_info['sql'][:100]}...")
 
         result = await semantic_manager.execute_query(query_info)
-        print(f"✅ Query executed: {result['row_count']} rows in {result['execution_time_ms']}ms")
+        print(
+            f"✅ Query executed: {result['row_count']} rows in {result['execution_time_ms']}ms"
+        )
 
-        if result['data']:
+        if result["data"]:
             print("   Results preview:")
-            for row in result['data'][:3]:
+            for row in result["data"][:3]:
                 print(f"     {row}")
 
         # Test 6: Statistical validation
@@ -72,7 +77,7 @@ async def main():
         validation = await statistical_tester.validate_result(result, ["plan_type"])
         print(f"✅ Validation complete")
         print(f"   Sample sizes: {validation['sample_sizes']}")
-        if validation['warnings']:
+        if validation["warnings"]:
             print(f"   Warnings: {validation['warnings']}")
 
         # Test 7: Statistical testing
@@ -93,7 +98,7 @@ async def main():
             result=result,
             query_info=query_info,
             validation=validation,
-            statistical_analysis=stats_result
+            statistical_analysis=stats_result,
         )
         print(f"✅ Interpretation: {interpretation}")
 
@@ -103,13 +108,15 @@ async def main():
             result=result,
             context="plan type analysis",
             current_dimensions=["plan_type"],
-            current_measures=["total_users", "conversion_rate"]
+            current_measures=["total_users", "conversion_rate"],
         )
         print(f"✅ Generated {len(suggestions)} suggestions:")
         for suggestion in suggestions[:2]:
             print(f"   - {suggestion['question']} ({suggestion['reason']})")
 
-        print(f"\n🎉 All tests passed! MCP server is ready for Claude Desktop integration.")
+        print(
+            f"\n🎉 All tests passed! MCP server is ready for Claude Desktop integration."
+        )
 
     except Exception as e:
         print(f"\n❌ Test failed: {e}")

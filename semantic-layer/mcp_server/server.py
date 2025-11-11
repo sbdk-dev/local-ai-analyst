@@ -8,6 +8,9 @@ Implements execution-first pattern to prevent fabrication.
 
 import asyncio
 import json
+import logging
+import time
+import traceback
 from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List, Optional
@@ -15,12 +18,20 @@ from typing import Any, Dict, List, Optional
 from fastmcp import FastMCP
 from pydantic import BaseModel
 
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+    handlers=[logging.FileHandler("ai_analyst.log"), logging.StreamHandler()],
+)
+logger = logging.getLogger(__name__)
+
+from .conversation_memory import ConversationMemory
+from .intelligence_layer import IntelligenceEngine
+from .query_optimizer import QueryOptimizer
 # Import our semantic layer integration
 from .semantic_layer_integration import SemanticLayerManager
-from .intelligence_layer import IntelligenceEngine
 from .statistical_testing import StatisticalTester
-from .conversation_memory import ConversationMemory
-from .query_optimizer import QueryOptimizer
 from .workflow_orchestrator import WorkflowOrchestrator
 
 # Initialize components
@@ -32,36 +43,176 @@ query_optimizer = QueryOptimizer()
 workflow_orchestrator = WorkflowOrchestrator()
 
 # MCP server configuration (temporary, will be recreated with lifespan)
-mcp = FastMCP("AI Analyst")
+mcp = FastMCP("ai-analyst")
+
+
+def error_handler(operation_name: str, retry_count: int = 2):
+    """Decorator for comprehensive error handling and logging"""
+
+    def decorator(func):
+        async def wrapper(**kwargs):
+            start_time = time.time()
+            last_exception = None
+
+            for attempt in range(retry_count + 1):
+                try:
+                    logger.info(
+                        f"Starting {operation_name} (attempt {attempt + 1}/{retry_count + 1})"
+                    )
+                    result = await func(**kwargs)
+
+                    execution_time = (time.time() - start_time) * 1000
+                    logger.info(
+                        f"Completed {operation_name} successfully in {execution_time:.2f}ms"
+                    )
+
+                    return result
+
+                except Exception as e:
+                    last_exception = e
+                    execution_time = (time.time() - start_time) * 1000
+
+                    error_details = {
+                        "operation": operation_name,
+                        "attempt": attempt + 1,
+                        "max_attempts": retry_count + 1,
+                        "execution_time_ms": execution_time,
+                        "error_type": type(e).__name__,
+                        "error_message": str(e),
+                        "kwargs": {
+                            k: v
+                            for k, v in kwargs.items()
+                            if k not in ["password", "token", "api_key"]
+                        },  # Sanitize sensitive data
+                    }
+
+                    if attempt < retry_count:
+                        logger.warning(
+                            f"Attempt {attempt + 1} failed for {operation_name}: {str(e)}. Retrying..."
+                        )
+                        await asyncio.sleep(
+                            min(2**attempt, 10)
+                        )  # Exponential backoff with max 10s
+                    else:
+                        logger.error(
+                            f"All attempts failed for {operation_name}: {str(e)}"
+                        )
+                        logger.error(
+                            f"Full error details: {json.dumps(error_details, indent=2)}"
+                        )
+                        logger.debug(f"Traceback: {traceback.format_exc()}")
+
+            # Return graceful error response instead of crashing
+            return {
+                "error": True,
+                "operation": operation_name,
+                "message": f"Operation failed after {retry_count + 1} attempts",
+                "last_error": str(last_exception),
+                "error_type": type(last_exception).__name__,
+                "timestamp": datetime.now().isoformat(),
+                "suggestion": "Please check the logs for detailed error information and try again later",
+            }
+
+        return wrapper
+
+    return decorator
+
+
+def validate_inputs(**validators):
+    """Decorator for input validation with detailed error messages"""
+
+    def decorator(func):
+        async def wrapper(**kwargs):
+            validation_errors = []
+
+            for param_name, validator_func in validators.items():
+                if param_name in kwargs:
+                    try:
+                        if not validator_func(kwargs[param_name]):
+                            validation_errors.append(
+                                f"Invalid {param_name}: {kwargs[param_name]}"
+                            )
+                    except Exception as e:
+                        validation_errors.append(
+                            f"Validation error for {param_name}: {str(e)}"
+                        )
+                elif param_name != "optional":
+                    validation_errors.append(
+                        f"Missing required parameter: {param_name}"
+                    )
+
+            if validation_errors:
+                logger.warning(
+                    f"Input validation failed for {func.__name__}: {validation_errors}"
+                )
+                return {
+                    "error": True,
+                    "validation_errors": validation_errors,
+                    "message": "Input validation failed",
+                    "timestamp": datetime.now().isoformat(),
+                }
+
+            return await func(**kwargs)
+
+        return wrapper
+
+    return decorator
+
+
+# Validation helper functions
+def is_valid_model(model: str) -> bool:
+    """Validate model name"""
+    return (
+        model and len(model) > 0 and model.replace("_", "").replace("-", "").isalnum()
+    )
+
+
+def is_valid_dimensions(dimensions: List[str]) -> bool:
+    """Validate dimensions list"""
+    return isinstance(dimensions, list) and len(dimensions) <= 10
+
+
+def is_valid_measures(measures: List[str]) -> bool:
+    """Validate measures list"""
+    return isinstance(measures, list) and len(measures) <= 20
+
 
 # ============================================================================
 # MCP Tool Models
 # ============================================================================
 
+
 class QueryModelRequest(BaseModel):
     """Request to query a semantic model"""
+
     model: str
     dimensions: List[str] = []
     measures: List[str] = []
     filters: Dict[str, Any] = {}
     limit: Optional[int] = None
 
+
 class SuggestAnalysisRequest(BaseModel):
     """Request for analysis suggestions"""
+
     current_result: Optional[str] = None
     context: Optional[str] = None
     model: Optional[str] = None
 
+
 class TestSignificanceRequest(BaseModel):
     """Request for statistical testing"""
+
     data: Dict[str, Any]
     comparison_type: str = "groups"  # groups, correlation, trend
     dimensions: List[str] = []
     measures: List[str] = []
 
+
 # ============================================================================
 # Core MCP Tools
 # ============================================================================
+
 
 @mcp.tool()
 async def list_models() -> Dict[str, Any]:
@@ -76,14 +227,12 @@ async def list_models() -> Dict[str, Any]:
         return {
             "models": models,
             "total_count": len(models),
-            "description": "Available semantic models for analysis"
+            "description": "Available semantic models for analysis",
         }
 
     except Exception as e:
-        return {
-            "error": str(e),
-            "message": "Failed to retrieve available models"
-        }
+        return {"error": str(e), "message": "Failed to retrieve available models"}
+
 
 @mcp.tool()
 async def get_model(model_name: str) -> Dict[str, Any]:
@@ -102,14 +251,15 @@ async def get_model(model_name: str) -> Dict[str, Any]:
         return {
             "model": model_name,
             "schema": model_info,
-            "sample_queries": model_info.get("sample_queries", [])
+            "sample_queries": model_info.get("sample_queries", []),
         }
 
     except Exception as e:
         return {
             "error": str(e),
-            "message": f"Failed to retrieve model info for '{model_name}'"
+            "message": f"Failed to retrieve model info for '{model_name}'",
         }
+
 
 @mcp.tool()
 async def query_model(
@@ -117,7 +267,7 @@ async def query_model(
     dimensions: List[str] = [],
     measures: List[str] = [],
     filters: Dict[str, Any] = {},
-    limit: Optional[int] = None
+    limit: Optional[int] = None,
 ) -> Dict[str, Any]:
     """
     Query a semantic model with execution-first pattern to prevent fabrication.
@@ -140,7 +290,7 @@ async def query_model(
             dimensions=dimensions,
             measures=measures,
             filters=filters,
-            limit=limit
+            limit=limit,
         )
 
         # 2. OPTIMIZE: Check cache and optimize query
@@ -154,7 +304,9 @@ async def query_model(
             result["cache_timestamp"] = cached_result.get("cache_timestamp")
         else:
             # 3. EXECUTE: Run optimized query to get REAL results
-            optimized_query = query_optimizer.optimize_query(query_info, conversation_memory)
+            optimized_query = query_optimizer.optimize_query(
+                query_info, conversation_memory
+            )
             result = await semantic_manager.execute_query(optimized_query)
 
             # Cache the result
@@ -176,7 +328,7 @@ async def query_model(
             result=result,
             query_info=query_info,
             validation=validation,
-            statistical_analysis=statistical_analysis
+            statistical_analysis=statistical_analysis,
         )
 
         # 7. SUGGEST: Recommend next questions (enhanced with conversation context)
@@ -184,7 +336,7 @@ async def query_model(
             result=result,
             context=f"querying {model} model",
             current_dimensions=dimensions,
-            current_measures=measures
+            current_measures=measures,
         )
 
         # 8. MEMORY: Track this interaction for conversation context
@@ -193,14 +345,18 @@ async def query_model(
             query_info=query_info,
             result=result,
             insights=[interpretation] if interpretation else [],
-            statistical_analysis=statistical_analysis
+            statistical_analysis=statistical_analysis,
         )
 
         # 9. CONTEXTUAL SUGGESTIONS: Get context-aware recommendations
-        contextual_suggestions = conversation_memory.suggest_contextual_next_steps(result)
+        contextual_suggestions = conversation_memory.suggest_contextual_next_steps(
+            result
+        )
 
         # 10. OPTIMIZATION INSIGHTS: Get performance recommendations
-        optimization_insights = query_optimizer.get_optimization_insights(query_info, result, conversation_memory)
+        optimization_insights = query_optimizer.get_optimization_insights(
+            query_info, result, conversation_memory
+        )
 
         # Combine suggestions (prioritize contextual ones)
         all_suggestions = contextual_suggestions + context_suggestions
@@ -227,14 +383,18 @@ async def query_model(
                 "filters": filters,
                 "execution_time_ms": result.get("execution_time_ms", 0),
                 "interaction_id": interaction_id,
-                "conversation_context": conversation_memory.get_conversation_context(hours_back=2),
+                "conversation_context": conversation_memory.get_conversation_context(
+                    hours_back=2
+                ),
                 "optimization": {
                     "cache_hit": result.get("cache_hit", False),
                     "cache_timestamp": result.get("cache_timestamp"),
                     "insights": optimization_insights,
-                    "query_complexity": query_optimizer.analyze_query_complexity(query_info)
-                }
-            }
+                    "query_complexity": query_optimizer.analyze_query_complexity(
+                        query_info
+                    ),
+                },
+            },
         }
 
     except Exception as e:
@@ -246,15 +406,16 @@ async def query_model(
                 "model": model,
                 "dimensions": dimensions,
                 "measures": measures,
-                "filters": filters
-            }
+                "filters": filters,
+            },
         }
+
 
 @mcp.tool()
 async def suggest_analysis(
     current_result: Optional[str] = None,
     context: Optional[str] = None,
-    model: Optional[str] = None
+    model: Optional[str] = None,
 ) -> Dict[str, Any]:
     """
     Suggest next analysis steps based on current results or context.
@@ -278,29 +439,21 @@ async def suggest_analysis(
                 context = current_result
 
         suggestions = await intelligence_engine.suggest_analysis_paths(
-            current_result=parsed_result,
-            context=context,
-            model=model
+            current_result=parsed_result, context=context, model=model
         )
 
-        return {
-            "suggestions": suggestions,
-            "context": context,
-            "model": model
-        }
+        return {"suggestions": suggestions, "context": context, "model": model}
 
     except Exception as e:
-        return {
-            "error": str(e),
-            "message": "Failed to generate analysis suggestions"
-        }
+        return {"error": str(e), "message": "Failed to generate analysis suggestions"}
+
 
 @mcp.tool()
 async def test_significance(
     data: Dict[str, Any],
     comparison_type: str = "groups",
     dimensions: List[str] = [],
-    measures: List[str] = []
+    measures: List[str] = [],
 ) -> Dict[str, Any]:
     """
     Run statistical significance tests on data.
@@ -319,13 +472,11 @@ async def test_significance(
             data=data,
             comparison_type=comparison_type,
             dimensions=dimensions,
-            measures=measures
+            measures=measures,
         )
 
         interpretation = await intelligence_engine.interpret_statistical_results(
-            test_results=test_results,
-            dimensions=dimensions,
-            measures=measures
+            test_results=test_results, dimensions=dimensions, measures=measures
         )
 
         return {
@@ -334,19 +485,18 @@ async def test_significance(
             "metadata": {
                 "comparison_type": comparison_type,
                 "dimensions": dimensions,
-                "measures": measures
-            }
+                "measures": measures,
+            },
         }
 
     except Exception as e:
-        return {
-            "error": str(e),
-            "message": "Failed to run statistical tests"
-        }
+        return {"error": str(e), "message": "Failed to run statistical tests"}
+
 
 # ============================================================================
 # Health Check and Info Tools
 # ============================================================================
+
 
 @mcp.tool()
 async def health_check() -> Dict[str, Any]:
@@ -362,15 +512,16 @@ async def health_check() -> Dict[str, Any]:
         return {
             "status": "healthy" if health_status["database_connected"] else "unhealthy",
             "components": health_status,
-            "timestamp": health_status.get("timestamp")
+            "timestamp": health_status.get("timestamp"),
         }
 
     except Exception as e:
         return {
             "status": "unhealthy",
             "error": str(e),
-            "message": "Health check failed"
+            "message": "Health check failed",
         }
+
 
 @mcp.tool()
 async def get_conversation_context() -> Dict[str, Any]:
@@ -386,20 +537,19 @@ async def get_conversation_context() -> Dict[str, Any]:
         return {
             "conversation_context": context,
             "patterns_discovered": conversation_memory.identify_analysis_patterns(),
-            "user_interests": conversation_memory.export_conversation_summary().get("user_interests", {}),
-            "recommendations": conversation_memory.suggest_contextual_next_steps()
+            "user_interests": conversation_memory.export_conversation_summary().get(
+                "user_interests", {}
+            ),
+            "recommendations": conversation_memory.suggest_contextual_next_steps(),
         }
 
     except Exception as e:
-        return {
-            "error": str(e),
-            "message": "Failed to retrieve conversation context"
-        }
+        return {"error": str(e), "message": "Failed to retrieve conversation context"}
+
 
 @mcp.tool()
 async def get_contextual_suggestions(
-    current_focus: Optional[str] = None,
-    hours_back: Optional[int] = None
+    current_focus: Optional[str] = None, hours_back: Optional[int] = None
 ) -> Dict[str, Any]:
     """
     Get contextual analysis suggestions based on conversation history.
@@ -423,21 +573,19 @@ async def get_contextual_suggestions(
             "conversation_context": context,
             "suggested_next_steps": suggestions,
             "analytical_patterns": conversation_memory.identify_analysis_patterns(),
-            "focus_areas": context.get("current_analytical_focus", {})
+            "focus_areas": context.get("current_analytical_focus", {}),
         }
 
     except Exception as e:
-        return {
-            "error": str(e),
-            "message": "Failed to generate contextual suggestions"
-        }
+        return {"error": str(e), "message": "Failed to generate contextual suggestions"}
+
 
 @mcp.tool()
 async def optimize_query(
     model: str,
     dimensions: List[str] = [],
     measures: List[str] = [],
-    filters: Dict[str, Any] = {}
+    filters: Dict[str, Any] = {},
 ) -> Dict[str, Any]:
     """
     Get query optimization recommendations based on conversation history.
@@ -456,7 +604,7 @@ async def optimize_query(
             "model": model,
             "dimensions": dimensions,
             "measures": measures,
-            "filters": filters
+            "filters": filters,
         }
 
         recommendations = conversation_memory.get_query_recommendations(query_info)
@@ -465,17 +613,18 @@ async def optimize_query(
             "query_optimization": recommendations,
             "suggested_additions": {
                 "dimensions": recommendations.get("additional_dimensions", [])[:3],
-                "measures": recommendations.get("additional_measures", [])[:3]
+                "measures": recommendations.get("additional_measures", [])[:3],
             },
             "performance_insights": recommendations.get("performance_notes", []),
-            "alternative_approaches": recommendations.get("alternative_approaches", [])
+            "alternative_approaches": recommendations.get("alternative_approaches", []),
         }
 
     except Exception as e:
         return {
             "error": str(e),
-            "message": f"Failed to optimize query for model '{model}'"
+            "message": f"Failed to optimize query for model '{model}'",
         }
+
 
 @mcp.tool()
 async def export_conversation_summary() -> Dict[str, Any]:
@@ -491,14 +640,12 @@ async def export_conversation_summary() -> Dict[str, Any]:
         return {
             "conversation_summary": summary,
             "export_timestamp": datetime.now().isoformat(),
-            "status": "success"
+            "status": "success",
         }
 
     except Exception as e:
-        return {
-            "error": str(e),
-            "message": "Failed to export conversation summary"
-        }
+        return {"error": str(e), "message": "Failed to export conversation summary"}
+
 
 @mcp.tool()
 async def get_sample_queries(model: str) -> Dict[str, Any]:
@@ -514,27 +661,26 @@ async def get_sample_queries(model: str) -> Dict[str, Any]:
     try:
         samples = await semantic_manager.get_sample_queries(model)
 
-        return {
-            "model": model,
-            "sample_queries": samples
-        }
+        return {"model": model, "sample_queries": samples}
 
     except Exception as e:
         return {
             "error": str(e),
-            "message": f"Failed to get sample queries for model '{model}'"
+            "message": f"Failed to get sample queries for model '{model}'",
         }
+
 
 # ============================================================================
 # Query Optimization Tools
 # ============================================================================
+
 
 @mcp.tool()
 async def get_query_performance(
     model: str,
     dimensions: List[str] = [],
     measures: List[str] = [],
-    hours_back: Optional[int] = 24
+    hours_back: Optional[int] = 24,
 ) -> Dict[str, Any]:
     """
     Get performance analytics for similar queries in conversation history.
@@ -549,11 +695,7 @@ async def get_query_performance(
         Performance insights and optimization recommendations
     """
     try:
-        query_info = {
-            "model": model,
-            "dimensions": dimensions,
-            "measures": measures
-        }
+        query_info = {"model": model, "dimensions": dimensions, "measures": measures}
 
         performance_analysis = query_optimizer.analyze_historical_performance(
             query_info, conversation_memory, hours_back
@@ -567,27 +709,28 @@ async def get_query_performance(
             "query_pattern": {
                 "model": model,
                 "dimensions": dimensions,
-                "measures": measures
+                "measures": measures,
             },
             "performance_analysis": performance_analysis,
             "optimization_suggestions": optimization_suggestions,
             "cache_status": {
                 "cache_size": len(query_optimizer.cache.cache),
-                "hit_rate": query_optimizer.get_cache_hit_rate()
-            }
+                "hit_rate": query_optimizer.get_cache_hit_rate(),
+            },
         }
 
     except Exception as e:
         return {
             "error": str(e),
-            "message": f"Failed to analyze query performance for model '{model}'"
+            "message": f"Failed to analyze query performance for model '{model}'",
         }
+
 
 @mcp.tool()
 async def suggest_batch_queries(
     current_model: str,
     current_dimensions: List[str] = [],
-    current_measures: List[str] = []
+    current_measures: List[str] = [],
 ) -> Dict[str, Any]:
     """
     Suggest queries that could be batched together for efficiency.
@@ -604,7 +747,7 @@ async def suggest_batch_queries(
         current_query = {
             "model": current_model,
             "dimensions": current_dimensions,
-            "measures": current_measures
+            "measures": current_measures,
         }
 
         batch_opportunities = query_optimizer.identify_batch_opportunities(
@@ -614,21 +757,24 @@ async def suggest_batch_queries(
         return {
             "current_query": current_query,
             "batch_opportunities": batch_opportunities,
-            "efficiency_gains": batch_opportunities.get("estimated_efficiency_improvement", 0),
-            "recommended_batches": batch_opportunities.get("recommended_batches", [])
+            "efficiency_gains": batch_opportunities.get(
+                "estimated_efficiency_improvement", 0
+            ),
+            "recommended_batches": batch_opportunities.get("recommended_batches", []),
         }
 
     except Exception as e:
         return {
             "error": str(e),
-            "message": f"Failed to suggest batch queries for model '{current_model}'"
+            "message": f"Failed to suggest batch queries for model '{current_model}'",
         }
+
 
 @mcp.tool()
 async def clear_query_cache(
     selective: bool = False,
     model_filter: Optional[str] = None,
-    age_threshold_minutes: Optional[int] = None
+    age_threshold_minutes: Optional[int] = None,
 ) -> Dict[str, Any]:
     """
     Clear query cache with optional selective clearing.
@@ -644,13 +790,12 @@ async def clear_query_cache(
     try:
         cache_stats_before = {
             "size": len(query_optimizer.cache.cache),
-            "hit_rate": query_optimizer.get_cache_hit_rate()
+            "hit_rate": query_optimizer.get_cache_hit_rate(),
         }
 
         if selective:
             cleared_count = query_optimizer.cache.selective_clear(
-                model_filter=model_filter,
-                age_threshold_minutes=age_threshold_minutes
+                model_filter=model_filter, age_threshold_minutes=age_threshold_minutes
             )
         else:
             cleared_count = len(query_optimizer.cache.cache)
@@ -658,27 +803,22 @@ async def clear_query_cache(
 
         cache_stats_after = {
             "size": len(query_optimizer.cache.cache),
-            "hit_rate": query_optimizer.get_cache_hit_rate()
+            "hit_rate": query_optimizer.get_cache_hit_rate(),
         }
 
         return {
             "operation": "selective_clear" if selective else "full_clear",
             "filters_applied": {
                 "model_filter": model_filter,
-                "age_threshold_minutes": age_threshold_minutes
+                "age_threshold_minutes": age_threshold_minutes,
             },
             "cleared_entries": cleared_count,
-            "cache_stats": {
-                "before": cache_stats_before,
-                "after": cache_stats_after
-            }
+            "cache_stats": {"before": cache_stats_before, "after": cache_stats_after},
         }
 
     except Exception as e:
-        return {
-            "error": str(e),
-            "message": "Failed to clear query cache"
-        }
+        return {"error": str(e), "message": "Failed to clear query cache"}
+
 
 @mcp.tool()
 async def get_optimization_dashboard() -> Dict[str, Any]:
@@ -695,37 +835,44 @@ async def get_optimization_dashboard() -> Dict[str, Any]:
                 "hit_rate": query_optimizer.get_cache_hit_rate(),
                 "memory_usage": query_optimizer.get_cache_memory_usage(),
                 "oldest_entry": query_optimizer.get_oldest_cache_entry(),
-                "newest_entry": query_optimizer.get_newest_cache_entry()
+                "newest_entry": query_optimizer.get_newest_cache_entry(),
             },
-            "optimization_patterns": query_optimizer.get_optimization_patterns(conversation_memory),
-            "performance_trends": query_optimizer.get_performance_trends(conversation_memory),
+            "optimization_patterns": query_optimizer.get_optimization_patterns(
+                conversation_memory
+            ),
+            "performance_trends": query_optimizer.get_performance_trends(
+                conversation_memory
+            ),
             "recommendations": {
-                "high_impact": query_optimizer.get_high_impact_optimizations(conversation_memory),
-                "quick_wins": query_optimizer.get_quick_optimization_wins(conversation_memory),
-                "cache_tuning": query_optimizer.get_cache_tuning_recommendations()
+                "high_impact": query_optimizer.get_high_impact_optimizations(
+                    conversation_memory
+                ),
+                "quick_wins": query_optimizer.get_quick_optimization_wins(
+                    conversation_memory
+                ),
+                "cache_tuning": query_optimizer.get_cache_tuning_recommendations(),
             },
             "conversation_insights": {
                 "query_patterns": conversation_memory.get_query_usage_patterns(),
                 "model_preferences": conversation_memory.get_model_usage_stats(),
-                "dimension_combinations": conversation_memory.get_popular_dimension_combinations()
-            }
+                "dimension_combinations": conversation_memory.get_popular_dimension_combinations(),
+            },
         }
 
         return {
             "optimization_dashboard": dashboard_data,
             "generated_at": datetime.now().isoformat(),
-            "status": "success"
+            "status": "success",
         }
 
     except Exception as e:
-        return {
-            "error": str(e),
-            "message": "Failed to generate optimization dashboard"
-        }
+        return {"error": str(e), "message": "Failed to generate optimization dashboard"}
+
 
 # ============================================================================
 # Multi-Query Workflow Tools
 # ============================================================================
+
 
 @mcp.tool()
 async def list_workflow_templates() -> Dict[str, Any]:
@@ -741,19 +888,16 @@ async def list_workflow_templates() -> Dict[str, Any]:
         return {
             "workflow_templates": templates,
             "total_templates": len(templates.get("available_templates", {})),
-            "description": "Multi-query analytical workflow templates"
+            "description": "Multi-query analytical workflow templates",
         }
 
     except Exception as e:
-        return {
-            "error": str(e),
-            "message": "Failed to retrieve workflow templates"
-        }
+        return {"error": str(e), "message": "Failed to retrieve workflow templates"}
+
 
 @mcp.tool()
 async def create_workflow(
-    template_id: str,
-    customizations: Optional[Dict[str, Any]] = None
+    template_id: str, customizations: Optional[Dict[str, Any]] = None
 ) -> Dict[str, Any]:
     """
     Create a new multi-query workflow execution from template.
@@ -767,8 +911,7 @@ async def create_workflow(
     """
     try:
         execution = await workflow_orchestrator.create_workflow(
-            template_id=template_id,
-            customizations=customizations or {}
+            template_id=template_id, customizations=customizations or {}
         )
 
         return {
@@ -777,14 +920,15 @@ async def create_workflow(
             "status": execution.status.value,
             "total_steps": len(execution.definition.steps),
             "created_at": execution.definition.created_at,
-            "description": execution.definition.description
+            "description": execution.definition.description,
         }
 
     except Exception as e:
         return {
             "error": str(e),
-            "message": f"Failed to create workflow from template '{template_id}'"
+            "message": f"Failed to create workflow from template '{template_id}'",
         }
+
 
 @mcp.tool()
 async def execute_workflow(execution_id: str) -> Dict[str, Any]:
@@ -803,7 +947,7 @@ async def execute_workflow(execution_id: str) -> Dict[str, Any]:
             semantic_manager=semantic_manager,
             intelligence_engine=intelligence_engine,
             statistical_tester=statistical_tester,
-            conversation_memory=conversation_memory
+            conversation_memory=conversation_memory,
         )
 
         return {
@@ -816,14 +960,15 @@ async def execute_workflow(execution_id: str) -> Dict[str, Any]:
             "insights": execution.insights,
             "results": execution.results,
             "started_at": execution.started_at,
-            "completed_at": execution.completed_at
+            "completed_at": execution.completed_at,
         }
 
     except Exception as e:
         return {
             "error": str(e),
-            "message": f"Failed to execute workflow '{execution_id}'"
+            "message": f"Failed to execute workflow '{execution_id}'",
         }
+
 
 @mcp.tool()
 async def get_workflow_status(execution_id: str) -> Dict[str, Any]:
@@ -839,16 +984,14 @@ async def get_workflow_status(execution_id: str) -> Dict[str, Any]:
     try:
         status = workflow_orchestrator.get_workflow_status(execution_id)
 
-        return {
-            "workflow_status": status,
-            "timestamp": datetime.now().isoformat()
-        }
+        return {"workflow_status": status, "timestamp": datetime.now().isoformat()}
 
     except Exception as e:
         return {
             "error": str(e),
-            "message": f"Failed to get workflow status for '{execution_id}'"
+            "message": f"Failed to get workflow status for '{execution_id}'",
         }
+
 
 @mcp.tool()
 async def cancel_workflow(execution_id: str) -> Dict[str, Any]:
@@ -864,22 +1007,20 @@ async def cancel_workflow(execution_id: str) -> Dict[str, Any]:
     try:
         result = await workflow_orchestrator.cancel_workflow(execution_id)
 
-        return {
-            "cancellation_result": result,
-            "timestamp": datetime.now().isoformat()
-        }
+        return {"cancellation_result": result, "timestamp": datetime.now().isoformat()}
 
     except Exception as e:
         return {
             "error": str(e),
-            "message": f"Failed to cancel workflow '{execution_id}'"
+            "message": f"Failed to cancel workflow '{execution_id}'",
         }
+
 
 @mcp.tool()
 async def run_conversion_analysis(
     include_cohorts: bool = True,
     include_statistical_tests: bool = True,
-    custom_dimensions: Optional[List[str]] = None
+    custom_dimensions: Optional[List[str]] = None,
 ) -> Dict[str, Any]:
     """
     Run comprehensive conversion analysis workflow with customizable options.
@@ -894,17 +1035,14 @@ async def run_conversion_analysis(
     """
     try:
         # Create customized workflow
-        customizations = {
-            "name": "Custom Conversion Analysis",
-            "steps": {}
-        }
+        customizations = {"name": "Custom Conversion Analysis", "steps": {}}
 
         # Add custom dimensions if provided
         if custom_dimensions:
             customizations["steps"]["industry_breakdown"] = {
                 "parameters": {
                     "dimensions": ["plan_type"] + custom_dimensions,
-                    "measures": ["conversion_rate", "total_users"]
+                    "measures": ["conversion_rate", "total_users"],
                 }
             }
 
@@ -929,7 +1067,7 @@ async def run_conversion_analysis(
             semantic_manager,
             intelligence_engine,
             statistical_tester,
-            conversation_memory
+            conversation_memory,
         )
 
         return {
@@ -937,26 +1075,27 @@ async def run_conversion_analysis(
             "execution_id": execution.execution_id,
             "status": result.status.value,
             "insights": result.insights,
-            "key_findings": self._extract_conversion_findings(result.results),
+            "key_findings": _extract_conversion_findings(result.results),
             "metadata": {
                 "included_cohorts": include_cohorts,
                 "included_statistical_tests": include_statistical_tests,
                 "custom_dimensions": custom_dimensions or [],
-                "execution_time_ms": result.total_execution_time_ms
-            }
+                "execution_time_ms": result.total_execution_time_ms,
+            },
         }
 
     except Exception as e:
         return {
             "error": str(e),
-            "message": "Failed to run conversion analysis workflow"
+            "message": "Failed to run conversion analysis workflow",
         }
+
 
 @mcp.tool()
 async def run_feature_usage_analysis(
     focus_on_power_users: bool = True,
     include_churn_correlation: bool = True,
-    feature_filter: Optional[List[str]] = None
+    feature_filter: Optional[List[str]] = None,
 ) -> Dict[str, Any]:
     """
     Run comprehensive feature usage analysis workflow.
@@ -971,29 +1110,20 @@ async def run_feature_usage_analysis(
     """
     try:
         # Create customized workflow
-        customizations = {
-            "name": "Custom Feature Usage Analysis",
-            "steps": {}
-        }
+        customizations = {"name": "Custom Feature Usage Analysis", "steps": {}}
 
         # Add feature filter if provided
         if feature_filter:
             customizations["steps"]["feature_adoption"] = {
-                "parameters": {
-                    "filters": {"feature_name": {"in": feature_filter}}
-                }
+                "parameters": {"filters": {"feature_name": {"in": feature_filter}}}
             }
 
         # Configure optional steps
         if not focus_on_power_users:
-            customizations["steps"]["power_user_analysis"] = {
-                "dependencies": ["skip"]
-            }
+            customizations["steps"]["power_user_analysis"] = {"dependencies": ["skip"]}
 
         if not include_churn_correlation:
-            customizations["steps"]["churn_relationship"] = {
-                "dependencies": ["skip"]
-            }
+            customizations["steps"]["churn_relationship"] = {"dependencies": ["skip"]}
 
         # Create and execute workflow
         execution = await workflow_orchestrator.create_workflow(
@@ -1005,7 +1135,7 @@ async def run_feature_usage_analysis(
             semantic_manager,
             intelligence_engine,
             statistical_tester,
-            conversation_memory
+            conversation_memory,
         )
 
         return {
@@ -1013,20 +1143,21 @@ async def run_feature_usage_analysis(
             "execution_id": execution.execution_id,
             "status": result.status.value,
             "insights": result.insights,
-            "feature_recommendations": self._extract_feature_recommendations(result.results),
+            "feature_recommendations": _extract_feature_recommendations(result.results),
             "metadata": {
                 "focused_on_power_users": focus_on_power_users,
                 "included_churn_correlation": include_churn_correlation,
                 "feature_filter": feature_filter or [],
-                "execution_time_ms": result.total_execution_time_ms
-            }
+                "execution_time_ms": result.total_execution_time_ms,
+            },
         }
 
     except Exception as e:
         return {
             "error": str(e),
-            "message": "Failed to run feature usage analysis workflow"
+            "message": "Failed to run feature usage analysis workflow",
         }
+
 
 def _extract_conversion_findings(results: Dict[str, Any]) -> List[str]:
     """Extract key conversion findings from workflow results"""
@@ -1046,6 +1177,7 @@ def _extract_conversion_findings(results: Dict[str, Any]) -> List[str]:
 
     return findings
 
+
 def _extract_feature_recommendations(results: Dict[str, Any]) -> List[str]:
     """Extract feature recommendations from workflow results"""
 
@@ -1055,55 +1187,72 @@ def _extract_feature_recommendations(results: Dict[str, Any]) -> List[str]:
         recommendations.append("Feature adoption patterns analyzed")
 
     if "usage_correlation" in results:
-        correlations = results["usage_correlation"].get("analysis_result", {}).get("correlations", [])
+        correlations = (
+            results["usage_correlation"]
+            .get("analysis_result", {})
+            .get("correlations", [])
+        )
         if correlations:
-            recommendations.append(f"Identified {len(correlations)} significant feature correlations")
+            recommendations.append(
+                f"Identified {len(correlations)} significant feature correlations"
+            )
 
     if "churn_relationship" in results:
         recommendations.append("Feature usage impact on churn analyzed")
 
     return recommendations
 
+
 # ============================================================================
 # Server Configuration and Startup
 # ============================================================================
+
 
 async def initialize_semantic_layer():
     """Initialize semantic layer connections"""
     try:
         await semantic_manager.initialize()
-        print("✅ Semantic layer initialized successfully")
+        logger.info("Semantic layer initialized successfully")
 
         # Test database connection
         health = await semantic_manager.health_check()
         if health["database_connected"]:
-            print(f"✅ Database connected: {health['database_info']}")
+            logger.info(f"Database connected: {health['database_info']}")
         else:
-            print("⚠️ Database connection failed")
+            logger.warning("Database connection failed")
 
-        print("🚀 AI Analyst MCP Server ready!")
+        logger.info("AI Analyst MCP Server ready!")
 
     except Exception as e:
-        print(f"❌ Initialization failed: {e}")
+        logger.error(f"Initialization failed: {e}")
         raise
+
 
 # ============================================================================
 # Main Entry Point
 # ============================================================================
 
+
 def main():
     """Main entry point for the MCP server"""
     import asyncio
+    import sys
 
-    print("Starting AI Analyst MCP Server...")
-    print("Semantic Layer: Boring SL + Ibis + DuckDB")
-    print("Intelligence: Execution-first + Auto-stats + Natural language")
+    # All startup messages go to stderr to avoid corrupting MCP STDIO protocol
+    print("Starting AI Analyst MCP Server...", file=sys.stderr)
+    print("Semantic Layer: Boring SL + Ibis + DuckDB", file=sys.stderr)
+    print("Intelligence: Execution-first + Auto-stats + Natural language", file=sys.stderr)
+
+    logger.info("Starting AI Analyst MCP Server")
+    logger.info("Semantic Layer: Boring SL + Ibis + DuckDB")
+    logger.info("Intelligence: Execution-first + Auto-stats + Natural language")
 
     # Initialize semantic layer before starting server
     asyncio.run(initialize_semantic_layer())
 
     # Run the FastMCP server
     mcp.run()
+
 
 if __name__ == "__main__":
     main()

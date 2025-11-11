@@ -5,8 +5,9 @@ Test script for Phase 4.2: Query Optimization Engine
 
 import asyncio
 import time
-from mcp_server.query_optimizer import QueryOptimizer, QueryCache
+
 from mcp_server.conversation_memory import ConversationMemory
+from mcp_server.query_optimizer import QueryCache, QueryOptimizer
 
 
 async def test_query_optimization():
@@ -28,7 +29,7 @@ async def test_query_optimization():
         "model": "users",
         "dimensions": ["plan_type"],
         "measures": ["total_users", "conversion_rate"],
-        "sql": "SELECT plan_type, COUNT(*) as total_users, AVG(conversion) as conversion_rate FROM users GROUP BY plan_type"
+        "sql": "SELECT plan_type, COUNT(*) as total_users, AVG(conversion) as conversion_rate FROM users GROUP BY plan_type",
     }
 
     # Test cache key generation
@@ -43,10 +44,10 @@ async def test_query_optimization():
     mock_result_1 = {
         "data": [
             {"plan_type": "basic", "total_users": 596, "conversion_rate": 81.8},
-            {"plan_type": "pro", "total_users": 116, "conversion_rate": 74.6}
+            {"plan_type": "pro", "total_users": 116, "conversion_rate": 74.6},
         ],
         "row_count": 2,
-        "execution_time_ms": 25.5
+        "execution_time_ms": 25.5,
     }
 
     query_optimizer.cache.put(test_query_1, mock_result_1)
@@ -64,21 +65,28 @@ async def test_query_optimization():
     simple_query = {
         "model": "users",
         "dimensions": ["plan_type"],
-        "measures": ["total_users"]
+        "measures": ["total_users"],
     }
 
     complex_query = {
         "model": "users",
         "dimensions": ["plan_type", "industry", "signup_date"],
         "measures": ["total_users", "conversion_rate", "avg_ltv", "churn_rate"],
-        "filters": {"signup_date": "> '2023-01-01'", "industry": "IN ['tech', 'finance']"}
+        "filters": {
+            "signup_date": "> '2023-01-01'",
+            "industry": "IN ['tech', 'finance']",
+        },
     }
 
     simple_complexity = query_optimizer._analyze_complexity(simple_query)
     complex_complexity = query_optimizer._analyze_complexity(complex_query)
 
-    print(f"✅ Simple query complexity: {simple_complexity['complexity_score']} ({simple_complexity['complexity_level']})")
-    print(f"✅ Complex query complexity: {complex_complexity['complexity_score']} ({complex_complexity['complexity_level']})")
+    print(
+        f"✅ Simple query complexity: {simple_complexity['complexity_score']} ({simple_complexity['complexity_level']})"
+    )
+    print(
+        f"✅ Complex query complexity: {complex_complexity['complexity_score']} ({complex_complexity['complexity_level']})"
+    )
     print(f"📈 Estimated time: {complex_complexity['estimated_time_ms']:.1f} ms")
 
     # Test 3: Cache performance tracking
@@ -91,13 +99,10 @@ async def test_query_optimization():
             "model": "users",
             "dimensions": [f"dimension_{i}"],
             "measures": ["metric_1"],
-            "sql": f"SELECT dimension_{i}, COUNT(*) FROM users GROUP BY dimension_{i}"
+            "sql": f"SELECT dimension_{i}, COUNT(*) FROM users GROUP BY dimension_{i}",
         }
         cache_key = query_optimizer.cache._generate_cache_key(test_query)
-        mock_result = {
-            "data": [{"count": 100 + i}],
-            "execution_time_ms": 20 + i
-        }
+        mock_result = {"data": [{"count": 100 + i}], "execution_time_ms": 20 + i}
         query_optimizer.cache.put(test_query, mock_result)
 
     # Test cache hits by re-querying
@@ -106,7 +111,7 @@ async def test_query_optimization():
             "model": "users",
             "dimensions": [f"dimension_{i}"],
             "measures": ["metric_1"],
-            "sql": f"SELECT dimension_{i}, COUNT(*) FROM users GROUP BY dimension_{i}"
+            "sql": f"SELECT dimension_{i}, COUNT(*) FROM users GROUP BY dimension_{i}",
         }
         cache_key = query_optimizer.cache._generate_cache_key(test_query)
         cached_result = query_optimizer.cache.get(test_query)
@@ -125,7 +130,7 @@ async def test_query_optimization():
         user_question="What's our conversion rate by plan type?",
         query_info=test_query_1,
         result=mock_result_1,
-        insights=["Basic plan has highest conversion rate"]
+        insights=["Basic plan has highest conversion rate"],
     )
 
     conversation_memory.add_interaction(
@@ -134,35 +139,41 @@ async def test_query_optimization():
             "model": "users",
             "dimensions": ["plan_type", "industry"],
             "measures": ["conversion_rate"],
-            "sql": "SELECT plan_type, industry, AVG(conversion) as conversion_rate FROM users GROUP BY plan_type, industry"
+            "sql": "SELECT plan_type, industry, AVG(conversion) as conversion_rate FROM users GROUP BY plan_type, industry",
         },
         result={
             "data": [
                 {"plan_type": "basic", "industry": "tech", "conversion_rate": 85.2},
-                {"plan_type": "basic", "industry": "fintech", "conversion_rate": 78.4}
+                {"plan_type": "basic", "industry": "fintech", "conversion_rate": 78.4},
             ],
-            "execution_time_ms": 32.1
+            "execution_time_ms": 32.1,
         },
-        insights=["Tech industry has higher conversion rates"]
+        insights=["Tech industry has higher conversion rates"],
     )
 
     # Test optimization suggestions
     optimization_query = {
         "model": "users",
         "dimensions": ["plan_type"],
-        "measures": ["conversion_rate"]
+        "measures": ["conversion_rate"],
     }
 
     # Test optimization (async call)
     import asyncio
+
     conversation_context = conversation_memory.get_conversation_context()
-    optimized_query = await query_optimizer.optimize_query(optimization_query, conversation_context)
+    optimized_query = await query_optimizer.optimize_query(
+        optimization_query, conversation_context
+    )
     print(f"✅ Original dimensions: {optimization_query['dimensions']}")
     print(f"🚀 Optimized dimensions: {optimized_query.get('dimensions', [])}")
 
     # Test optimization insights (async call)
     insights_result = await query_optimizer.get_performance_insights()
-    optimization_insights = insights_result.get('optimization_opportunities', ['Cache hit optimization', 'Query complexity analysis'])
+    optimization_insights = insights_result.get(
+        "optimization_opportunities",
+        ["Cache hit optimization", "Query complexity analysis"],
+    )
     print(f"💡 Optimization insights: {len(optimization_insights)} suggestions")
     for insight in optimization_insights[:3]:
         print(f"   • {insight}")
@@ -174,7 +185,7 @@ async def test_query_optimization():
     current_query = {
         "model": "users",
         "dimensions": ["plan_type"],
-        "measures": ["conversion_rate"]
+        "measures": ["conversion_rate"],
     }
 
     batch_opportunities = await query_optimizer.suggest_batch_execution([current_query])
@@ -183,7 +194,9 @@ async def test_query_optimization():
 
     if batch_opportunities:
         for i, batch in enumerate(batch_opportunities[:2]):
-            print(f"   Batch {i+1}: {batch.get('model', 'unknown')} model ({len(batch.get('queries', []))} queries)")
+            print(
+                f"   Batch {i+1}: {batch.get('model', 'unknown')} model ({len(batch.get('queries', []))} queries)"
+            )
 
     # Test 6: Cache management and optimization
     print("\n🧹 Testing Cache Management")
@@ -213,12 +226,14 @@ async def test_query_optimization():
     # Mock performance trends analysis
     performance_insights = await query_optimizer.get_performance_insights()
     print(f"✅ Performance trends analyzed")
-    print(f"📊 Cache efficiency: {performance_insights.get('cache_efficiency', 85):.1f}%")
+    print(
+        f"📊 Cache efficiency: {performance_insights.get('cache_efficiency', 85):.1f}%"
+    )
     print(f"🚀 Total queries analyzed: {performance_insights.get('total_queries', 0)}")
 
-    if performance_insights.get('by_model'):
+    if performance_insights.get("by_model"):
         print("📋 Model performance breakdown:")
-        for model, stats in performance_insights['by_model'].items():
+        for model, stats in performance_insights["by_model"].items():
             print(f"   {model}: {stats.get('query_count', 0)} queries")
 
     # Test 8: Historical performance analysis
@@ -229,13 +244,15 @@ async def test_query_optimization():
     interactions = conversation_memory.interactions
     print(f"✅ Historical analysis complete")
     print(f"📊 Similar queries found: {len(interactions)}")
-    print(f"⚡ Performance baseline: {sum(i.execution_time_ms for i in interactions) / max(len(interactions), 1):.1f} ms avg")
+    print(
+        f"⚡ Performance baseline: {sum(i.execution_time_ms for i in interactions) / max(len(interactions), 1):.1f} ms avg"
+    )
 
     print("💡 Top optimization opportunities:")
     opportunities = [
         "Consider caching frequently queried dimensions",
         "Batch similar queries for efficiency",
-        "Pre-aggregate common metric combinations"
+        "Pre-aggregate common metric combinations",
     ]
     for i, opp in enumerate(opportunities[:3], 1):
         print(f"   {i}. {opp}")

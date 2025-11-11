@@ -1,0 +1,84 @@
+2025-11-08 21:58:23,282 - mcp_server.server - INFO - Starting AI Analyst MCP Server
+2025-11-08 21:58:23,283 - mcp_server.server - INFO - Semantic Layer: Boring SL + Ibis + DuckDB
+2025-11-08 21:58:23,283 - mcp_server.server - INFO - Intelligence: Execution-first + Auto-stats + Natural language
+2025-11-08 21:58:23,455 - mcp_server.semantic_layer_integration - INFO - Loaded 3 semantic models
+2025-11-08 21:58:23,455 - mcp_server.server - INFO - Semantic layer initialized successfully
+2025-11-08 21:58:23,482 - mcp_server.server - INFO - Database connected: {'file_size_mb': 9.26, 'tables': ['users', 'events', 'sessions'], 'models_loaded': 3}
+2025-11-08 21:58:23,482 - mcp_server.server - INFO - AI Analyst MCP Server ready!
+2025-11-08 22:16:14,380 - mcp_server.server - INFO - Starting AI Analyst MCP Server
+2025-11-08 22:16:14,380 - mcp_server.server - INFO - Semantic Layer: Boring SL + Ibis + DuckDB
+2025-11-08 22:16:14,380 - mcp_server.server - INFO - Intelligence: Execution-first + Auto-stats + Natural language
+2025-11-08 22:16:14,576 - mcp_server.semantic_layer_integration - INFO - Loaded 3 semantic models
+2025-11-08 22:16:14,577 - mcp_server.server - INFO - Semantic layer initialized successfully
+2025-11-08 22:16:14,626 - mcp_server.server - INFO - Database connected: {'file_size_mb': 9.26, 'tables': ['users', 'events', 'sessions'], 'models_loaded': 3}
+2025-11-08 22:16:14,626 - mcp_server.server - INFO - AI Analyst MCP Server ready!
+2025-11-08 22:16:23,821 - mcp_server.server - INFO - Starting AI Analyst MCP Server
+2025-11-08 22:16:23,821 - mcp_server.server - INFO - Semantic Layer: Boring SL + Ibis + DuckDB
+2025-11-08 22:16:23,821 - mcp_server.server - INFO - Intelligence: Execution-first + Auto-stats + Natural language
+2025-11-08 22:16:23,995 - mcp_server.semantic_layer_integration - INFO - Loaded 3 semantic models
+2025-11-08 22:16:23,995 - mcp_server.server - INFO - Semantic layer initialized successfully
+2025-11-08 22:16:24,021 - mcp_server.server - INFO - Database connected: {'file_size_mb': 9.26, 'tables': ['users', 'events', 'sessions'], 'models_loaded': 3}
+2025-11-08 22:16:24,021 - mcp_server.server - INFO - AI Analyst MCP Server ready!
+2025-11-08 22:16:30,059 - mcp_server.server - INFO - Starting AI Analyst MCP Server
+2025-11-08 22:16:30,060 - mcp_server.server - INFO - Semantic Layer: Boring SL + Ibis + DuckDB
+2025-11-08 22:16:30,060 - mcp_server.server - INFO - Intelligence: Execution-first + Auto-stats + Natural language
+2025-11-08 22:16:30,325 - mcp_server.semantic_layer_integration - INFO - Loaded 3 semantic models
+2025-11-08 22:16:30,326 - mcp_server.server - INFO - Semantic layer initialized successfully
+2025-11-08 22:16:30,372 - mcp_server.server - INFO - Database connected: {'file_size_mb': 9.26, 'tables': ['users', 'events', 'sessions'], 'models_loaded': 3}
+2025-11-08 22:16:30,372 - mcp_server.server - INFO - AI Analyst MCP Server ready!
+2025-11-08 22:17:28,915 - mcp_server.server - INFO - Starting AI Analyst MCP Server
+2025-11-08 22:17:28,915 - mcp_server.server - INFO - Semantic Layer: Boring SL + Ibis + DuckDB
+2025-11-08 22:17:28,915 - mcp_server.server - INFO - Intelligence: Execution-first + Auto-stats + Natural language
+2025-11-08 22:17:29,128 - mcp_server.semantic_layer_integration - INFO - Loaded 3 semantic models
+2025-11-08 22:17:29,128 - mcp_server.server - INFO - Semantic layer initialized successfully
+2025-11-08 22:17:29,145 - mcp_server.server - INFO - Database connected: {'file_size_mb': 9.26, 'tables': ['users', 'events', 'sessions'], 'models_loaded': 3}
+2025-11-08 22:17:29,145 - mcp_server.server - INFO - AI Analyst MCP Server ready!
+2025-11-08 22:17:43,526 - mcp_server.server - INFO - Starting AI Analyst MCP Server
+2025-11-08 22:17:43,526 - mcp_server.server - INFO - Semantic Layer: Boring SL + Ibis + DuckDB
+2025-11-08 22:17:43,526 - mcp_server.server - INFO - Intelligence: Execution-first + Auto-stats + Natural language
+2025-11-08 22:17:43,700 - mcp_server.semantic_layer_integration - INFO - Loaded 3 semantic models
+2025-11-08 22:17:43,700 - mcp_server.server - INFO - Semantic layer initialized successfully
+2025-11-08 22:17:43,723 - mcp_server.server - INFO - Database connected: {'file_size_mb': 9.26, 'tables': ['users', 'events', 'sessions'], 'models_loaded': 3}
+2025-11-08 22:17:43,723 - mcp_server.server - INFO - AI Analyst MCP Server ready!
+2025-11-08 22:27:37,919 - mcp_server.server - INFO - Starting AI Analyst MCP Server
+2025-11-08 22:27:37,919 - mcp_server.server - INFO - Semantic Layer: Boring SL + Ibis + DuckDB
+2025-11-08 22:27:37,919 - mcp_server.server - INFO - Intelligence: Execution-first + Auto-stats + Natural language
+2025-11-08 22:27:38,087 - mcp_server.semantic_layer_integration - INFO - Loaded 3 semantic models
+2025-11-08 22:27:38,087 - mcp_server.server - INFO - Semantic layer initialized successfully
+2025-11-08 22:27:38,111 - mcp_server.server - INFO - Database connected: {'file_size_mb': 9.26, 'tables': ['users', 'events', 'sessions'], 'models_loaded': 3}
+2025-11-08 22:27:38,112 - mcp_server.server - INFO - AI Analyst MCP Server ready!
+2025-11-08 22:27:38,129 - mcp.server.lowlevel.server - INFO - Processing request of type ListToolsRequest
+2025-11-08 22:27:38,130 - mcp.server.lowlevel.server - INFO - Processing request of type ListPromptsRequest
+2025-11-08 22:27:38,131 - mcp.server.lowlevel.server - INFO - Processing request of type ListResourcesRequest
+2025-11-08 22:37:16,435 - mcp.server.lowlevel.server - INFO - Processing request of type CallToolRequest
+2025-11-08 22:38:10,929 - mcp.server.lowlevel.server - INFO - Processing request of type CallToolRequest
+2025-11-08 22:38:24,707 - mcp.server.lowlevel.server - INFO - Processing request of type CallToolRequest
+2025-11-08 22:39:25,695 - mcp.server.lowlevel.server - INFO - Processing request of type CallToolRequest
+2025-11-08 22:39:37,126 - mcp.server.lowlevel.server - INFO - Processing request of type CallToolRequest
+2025-11-08 22:39:45,927 - mcp.server.lowlevel.server - INFO - Processing request of type CallToolRequest
+2025-11-08 22:39:57,450 - mcp.server.lowlevel.server - INFO - Processing request of type CallToolRequest
+2025-11-08 22:40:42,356 - mcp.server.lowlevel.server - INFO - Processing request of type CallToolRequest
+2025-11-08 22:40:55,617 - mcp.server.lowlevel.server - INFO - Processing request of type CallToolRequest
+2025-11-08 22:41:56,566 - mcp.server.lowlevel.server - INFO - Processing request of type CallToolRequest
+2025-11-08 22:42:38,993 - mcp.server.lowlevel.server - INFO - Processing request of type CallToolRequest
+2025-11-08 22:59:36,645 - mcp_server.server - INFO - Starting AI Analyst MCP Server
+2025-11-08 22:59:36,646 - mcp_server.server - INFO - Semantic Layer: Boring SL + Ibis + DuckDB
+2025-11-08 22:59:36,646 - mcp_server.server - INFO - Intelligence: Execution-first + Auto-stats + Natural language
+2025-11-08 22:59:37,104 - mcp_server.semantic_layer_integration - INFO - Loaded 3 semantic models
+2025-11-08 22:59:37,104 - mcp_server.server - INFO - Semantic layer initialized successfully
+2025-11-08 22:59:37,208 - mcp_server.server - INFO - Database connected: {'file_size_mb': 9.26, 'tables': ['users', 'events', 'sessions'], 'models_loaded': 3}
+2025-11-08 22:59:37,208 - mcp_server.server - INFO - AI Analyst MCP Server ready!
+2025-11-08 23:09:44,815 - mcp_server.server - INFO - Starting AI Analyst MCP Server
+2025-11-08 23:09:44,816 - mcp_server.server - INFO - Semantic Layer: Boring SL + Ibis + DuckDB
+2025-11-08 23:09:44,816 - mcp_server.server - INFO - Intelligence: Execution-first + Auto-stats + Natural language
+2025-11-08 23:09:44,994 - mcp_server.semantic_layer_integration - INFO - Loaded 3 semantic models
+2025-11-08 23:09:44,994 - mcp_server.server - INFO - Semantic layer initialized successfully
+2025-11-08 23:09:45,018 - mcp_server.server - INFO - Database connected: {'file_size_mb': 9.26, 'tables': ['users', 'events', 'sessions'], 'models_loaded': 3}
+2025-11-08 23:09:45,018 - mcp_server.server - INFO - AI Analyst MCP Server ready!
+2025-11-08 23:38:35,185 - mcp_server.server - INFO - Starting AI Analyst MCP Server
+2025-11-08 23:38:35,185 - mcp_server.server - INFO - Semantic Layer: Boring SL + Ibis + DuckDB
+2025-11-08 23:38:35,185 - mcp_server.server - INFO - Intelligence: Execution-first + Auto-stats + Natural language
+2025-11-08 23:38:35,387 - mcp_server.semantic_layer_integration - INFO - Loaded 3 semantic models
+2025-11-08 23:38:35,388 - mcp_server.server - INFO - Semantic layer initialized successfully
+2025-11-08 23:38:35,425 - mcp_server.server - INFO - Database connected: {'file_size_mb': 9.26, 'tables': ['users', 'events', 'sessions'], 'models_loaded': 3}
+2025-11-08 23:38:35,425 - mcp_server.server - INFO - AI Analyst MCP Server ready!

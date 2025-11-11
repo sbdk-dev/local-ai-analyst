@@ -6,14 +6,19 @@ Integrates with Boring Semantic Layer and Ibis to provide
 query building and execution capabilities.
 """
 
+import logging
 import time
-import yaml
+from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 import ibis
+import numpy as np
 import pandas as pd
-from datetime import datetime
+import yaml
+
+logger = logging.getLogger(__name__)
+
 
 class SemanticLayerManager:
     """Manages semantic layer models and query execution"""
@@ -32,20 +37,20 @@ class SemanticLayerManager:
         # Load semantic models
         await self._load_models()
 
-        print(f"Loaded {len(self.models)} semantic models")
+        logger.info(f"Loaded {len(self.models)} semantic models")
 
     async def _load_models(self):
         """Load YAML semantic model definitions"""
         for model_file in self.models_path.glob("*.yml"):
             try:
-                with open(model_file, 'r') as f:
+                with open(model_file, "r") as f:
                     model_config = yaml.safe_load(f)
 
                 model_name = model_config["model"]["name"]
                 self.models[model_name] = model_config
 
             except Exception as e:
-                print(f"Failed to load model {model_file}: {e}")
+                logger.error(f"Failed to load model {model_file}: {e}")
 
     async def get_available_models(self) -> List[Dict[str, Any]]:
         """Get list of available semantic models"""
@@ -58,14 +63,16 @@ class SemanticLayerManager:
             dimensions = config.get("dimensions", [])
             measures = config.get("measures", [])
 
-            models.append({
-                "name": name,
-                "description": model_info.get("description", ""),
-                "table": model_info.get("table", ""),
-                "dimensions_count": len(dimensions),
-                "measures_count": len(measures),
-                "sample_queries_count": len(config.get("sample_queries", []))
-            })
+            models.append(
+                {
+                    "name": name,
+                    "description": model_info.get("description", ""),
+                    "table": model_info.get("table", ""),
+                    "dimensions_count": len(dimensions),
+                    "measures_count": len(measures),
+                    "sample_queries_count": len(config.get("sample_queries", [])),
+                }
+            )
 
         return models
 
@@ -82,7 +89,7 @@ class SemanticLayerManager:
             "measures": config.get("measures", []),
             "context": config.get("context", {}),
             "sample_queries": config.get("sample_queries", []),
-            "validation": config.get("validation", {})
+            "validation": config.get("validation", {}),
         }
 
     async def build_query(
@@ -91,7 +98,7 @@ class SemanticLayerManager:
         dimensions: List[str] = [],
         measures: List[str] = [],
         filters: Dict[str, Any] = {},
-        limit: Optional[int] = None
+        limit: Optional[int] = None,
     ) -> Dict[str, Any]:
         """Build SQL query from semantic model specification"""
 
@@ -142,10 +149,15 @@ class SemanticLayerManager:
 
                 if numerator == "paid_users" and denominator == "total_users":
                     # Special case for conversion rate
-                    select_parts.append(f"COUNT(DISTINCT CASE WHEN plan_type != 'free' THEN user_id END) * 100.0 / COUNT(DISTINCT user_id) as {measure}")
+                    select_parts.append(
+                        f"COUNT(DISTINCT CASE WHEN plan_type != 'free' THEN user_id END) * 100.0 / COUNT(DISTINCT user_id) as {measure}"
+                    )
                 else:
-                    # Generic ratio - would need more sophisticated handling in real implementation
-                    select_parts.append(f"0.0 as {measure}  -- ratio calculation not implemented")
+                    # Generic ratio calculation with proper handling
+                    ratio_sql = self._build_ratio_calculation(
+                        numerator, denominator, table_name, measure
+                    )
+                    select_parts.append(ratio_sql)
 
             elif "sql" in measure_config:
                 select_parts.append(f"({measure_config['sql']}) as {measure}")
@@ -165,12 +177,18 @@ class SemanticLayerManager:
                 LEFT JOIN events e ON u.user_id = e.user_id
                 LEFT JOIN sessions s ON u.user_id = s.user_id
             """
-        elif model == "events" and any(dim.startswith("plan_") or dim.startswith("industry") for dim in dimensions):
+        elif model == "events" and any(
+            dim.startswith("plan_") or dim.startswith("industry") for dim in dimensions
+        ):
             # Join events with users for demographic analysis
             from_clause = f"{table_name} e JOIN users u ON e.user_id = u.user_id"
             # Update select parts to use proper table aliases
-            select_parts = [part.replace("plan_type", "u.plan_type").replace("industry", "u.industry")
-                          for part in select_parts]
+            select_parts = [
+                part.replace("plan_type", "u.plan_type").replace(
+                    "industry", "u.industry"
+                )
+                for part in select_parts
+            ]
 
         # Build WHERE clause
         where_conditions = []
@@ -178,7 +196,9 @@ class SemanticLayerManager:
             if isinstance(value, str):
                 where_conditions.append(f"{key} = '{value}'")
             elif isinstance(value, list):
-                quoted_values = [f"'{v}'" if isinstance(v, str) else str(v) for v in value]
+                quoted_values = [
+                    f"'{v}'" if isinstance(v, str) else str(v) for v in value
+                ]
                 where_conditions.append(f"{key} IN ({', '.join(quoted_values)})")
             else:
                 where_conditions.append(f"{key} = {value}")
@@ -199,7 +219,9 @@ class SemanticLayerManager:
         limit_clause = f"LIMIT {limit}" if limit else ""
 
         # Assemble final query
-        where_clause = f"WHERE {' AND '.join(where_conditions)}" if where_conditions else ""
+        where_clause = (
+            f"WHERE {' AND '.join(where_conditions)}" if where_conditions else ""
+        )
 
         sql = f"""
         SELECT {', '.join(select_parts)}
@@ -216,7 +238,7 @@ class SemanticLayerManager:
             "dimensions": dimensions,
             "measures": measures,
             "filters": filters,
-            "table": table_name
+            "table": table_name,
         }
 
     async def execute_query(self, query_info: Dict[str, Any]) -> Dict[str, Any]:
@@ -232,7 +254,23 @@ class SemanticLayerManager:
             execution_time = time.time() - start_time
 
             # Convert DataFrame to records for JSON serialization
-            data = result_df.to_dict('records')
+            # Must convert NumPy types to native Python types for MCP serialization
+            data = []
+            for row in result_df.to_dict("records"):
+                converted_row = {}
+                for key, value in row.items():
+                    # Convert NumPy types to native Python types
+                    if isinstance(value, np.integer):
+                        converted_row[key] = int(value)
+                    elif isinstance(value, np.floating):
+                        converted_row[key] = float(value)
+                    elif isinstance(value, np.bool_):
+                        converted_row[key] = bool(value)
+                    elif pd.isna(value):
+                        converted_row[key] = None
+                    else:
+                        converted_row[key] = value
+                data.append(converted_row)
 
             # Calculate basic statistics
             row_count = len(data)
@@ -244,7 +282,7 @@ class SemanticLayerManager:
                 "row_count": row_count,
                 "column_count": column_count,
                 "execution_time_ms": round(execution_time * 1000, 2),
-                "timestamp": datetime.now().isoformat()
+                "timestamp": datetime.now().isoformat(),
             }
 
         except Exception as e:
@@ -257,7 +295,7 @@ class SemanticLayerManager:
                 "row_count": 0,
                 "column_count": 0,
                 "execution_time_ms": round(execution_time * 1000, 2),
-                "timestamp": datetime.now().isoformat()
+                "timestamp": datetime.now().isoformat(),
             }
 
     async def get_sample_queries(self, model: str) -> List[Dict[str, Any]]:
@@ -280,7 +318,7 @@ class SemanticLayerManager:
             db_info = {
                 "file_size_mb": round(self.db_path.stat().st_size / (1024 * 1024), 2),
                 "tables": ["users", "events", "sessions"],
-                "models_loaded": len(self.models)
+                "models_loaded": len(self.models),
             }
 
             return {
@@ -288,7 +326,7 @@ class SemanticLayerManager:
                 "database_info": db_info,
                 "models_count": len(self.models),
                 "test_query_result": result.iloc[0]["test_count"],
-                "timestamp": datetime.now().isoformat()
+                "timestamp": datetime.now().isoformat(),
             }
 
         except Exception as e:
@@ -296,8 +334,65 @@ class SemanticLayerManager:
                 "database_connected": False,
                 "error": str(e),
                 "models_count": len(self.models),
-                "timestamp": datetime.now().isoformat()
+                "timestamp": datetime.now().isoformat(),
             }
+
+    def _build_ratio_calculation(
+        self, numerator: str, denominator: str, table_name: str, measure_name: str
+    ) -> str:
+        """Build SQL for generic ratio calculation"""
+
+        # Map common measure names to their SQL calculations
+        measure_mappings = {
+            # User metrics
+            "active_users": "COUNT(DISTINCT CASE WHEN last_activity_date >= DATE('now', '-30 days') THEN user_id END)",
+            "total_users": "COUNT(DISTINCT user_id)",
+            "paid_users": "COUNT(DISTINCT CASE WHEN plan_type != 'free' THEN user_id END)",
+            "free_users": "COUNT(DISTINCT CASE WHEN plan_type = 'free' THEN user_id END)",
+            # Event metrics
+            "total_events": "COUNT(*)",
+            "unique_events": "COUNT(DISTINCT event_id)",
+            "conversion_events": "COUNT(DISTINCT CASE WHEN event_type = 'conversion' THEN event_id END)",
+            # Engagement metrics
+            "sessions": "COUNT(DISTINCT session_id)",
+            "daily_sessions": "COUNT(DISTINCT session_id) / COUNT(DISTINCT DATE(created_at))",
+            "weekly_sessions": "COUNT(DISTINCT session_id) / (COUNT(DISTINCT DATE(created_at)) / 7.0)",
+            # Revenue metrics
+            "total_revenue": "SUM(COALESCE(revenue, 0))",
+            "average_revenue": "AVG(COALESCE(revenue, 0))",
+            "monthly_revenue": "SUM(CASE WHEN created_at >= DATE('now', '-30 days') THEN COALESCE(revenue, 0) ELSE 0 END)",
+        }
+
+        # Get SQL for numerator and denominator
+        numerator_sql = measure_mappings.get(numerator, f"COUNT(DISTINCT {numerator})")
+        denominator_sql = measure_mappings.get(
+            denominator, f"COUNT(DISTINCT {denominator})"
+        )
+
+        # Handle special cases for common ratios
+        if numerator in ["paid_users", "active_users"] and denominator == "total_users":
+            # Convert to percentage
+            ratio_sql = f"({numerator_sql}) * 100.0 / NULLIF(({denominator_sql}), 0) as {measure_name}"
+        elif "revenue" in numerator and "users" in denominator:
+            # Revenue per user metrics
+            ratio_sql = (
+                f"({numerator_sql}) / NULLIF(({denominator_sql}), 0) as {measure_name}"
+            )
+        elif "events" in numerator and "sessions" in denominator:
+            # Events per session
+            ratio_sql = (
+                f"({numerator_sql}) / NULLIF(({denominator_sql}), 0) as {measure_name}"
+            )
+        elif "sessions" in numerator and "users" in denominator:
+            # Sessions per user
+            ratio_sql = (
+                f"({numerator_sql}) / NULLIF(({denominator_sql}), 0) as {measure_name}"
+            )
+        else:
+            # Generic ratio calculation
+            ratio_sql = f"({numerator_sql}) * 1.0 / NULLIF(({denominator_sql}), 0) as {measure_name}"
+
+        return ratio_sql
 
     async def cleanup(self):
         """Clean up database connections"""

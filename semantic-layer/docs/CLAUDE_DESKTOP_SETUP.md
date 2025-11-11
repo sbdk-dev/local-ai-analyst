@@ -23,7 +23,19 @@ Find your Claude Desktop configuration file:
 %APPDATA%\Claude\claude_desktop_config.json
 ```
 
-### 2. Add AI Analyst MCP Server
+### 2. Find Full Path to UV
+
+GUI apps don't inherit shell PATH, so you need the full path to `uv`:
+
+```bash
+which uv
+# Common locations:
+# macOS (Homebrew): /opt/homebrew/bin/uv
+# macOS (curl install): ~/.cargo/bin/uv
+# Linux: ~/.cargo/bin/uv
+```
+
+### 3. Add AI Analyst MCP Server
 
 Open the configuration file and add our server to the `mcpServers` section:
 
@@ -31,25 +43,23 @@ Open the configuration file and add our server to the `mcpServers` section:
 {
   "mcpServers": {
     "ai-analyst": {
-      "command": "uv",
+      "command": "/opt/homebrew/bin/uv",
       "args": [
         "run",
         "python",
-        "-m",
-        "mcp_server.server"
+        "run_mcp_server.py"
       ],
-      "cwd": "/Users/mattstrautmann/Documents/github/claude-analyst/semantic-layer",
-      "env": {
-        "UV_PROJECT_ENVIRONMENT": "/Users/mattstrautmann/Documents/github/claude-analyst/semantic-layer/.venv"
-      }
+      "cwd": "/Users/mattstrautmann/Documents/github/claude-analyst/semantic-layer"
     }
   }
 }
 ```
 
-**Important:** Update the `cwd` path to match your actual installation directory.
+**Important:**
+- Update the `command` path to your actual `uv` location (from `which uv`)
+- Update the `cwd` path to match your actual installation directory
 
-### 3. Test Configuration
+### 4. Test Configuration
 
 Copy the configuration from `claude_desktop_config.json` in this directory:
 
@@ -59,7 +69,7 @@ cp claude_desktop_config.json ~/Library/Application\ Support/Claude/claude_deskt
 
 Or merge it with your existing configuration if you have other MCP servers.
 
-### 4. Restart Claude Desktop
+### 5. Restart Claude Desktop
 
 1. Quit Claude Desktop completely
 2. Restart the application

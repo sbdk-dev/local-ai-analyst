@@ -7,8 +7,8 @@ based on query results. Implements execution-first pattern to prevent fabricatio
 """
 
 import json
-from typing import Any, Dict, List, Optional
 from datetime import datetime
+from typing import Any, Dict, List, Optional
 
 
 class IntelligenceEngine:
@@ -23,7 +23,7 @@ class IntelligenceEngine:
         result: Dict[str, Any],
         query_info: Dict[str, Any],
         validation: Optional[Dict[str, Any]] = None,
-        statistical_analysis: Optional[Dict[str, Any]] = None
+        statistical_analysis: Optional[Dict[str, Any]] = None,
     ) -> str:
         """
         Generate natural language interpretation based on REAL query results.
@@ -67,7 +67,11 @@ class IntelligenceEngine:
                             elif value >= 1000:
                                 formatted_value = f"{value/1000:.1f}K"
                             else:
-                                formatted_value = f"{value:,.0f}" if value == int(value) else f"{value:.1f}"
+                                formatted_value = (
+                                    f"{value:,.0f}"
+                                    if value == int(value)
+                                    else f"{value:.1f}"
+                                )
                         else:
                             formatted_value = str(value)
 
@@ -82,7 +86,13 @@ class IntelligenceEngine:
                     measure = measures[0]  # Focus on first measure
 
                     # Sort data by measure to find extremes
-                    sorted_data = sorted(data, key=lambda x: x.get(measure, 0) if x.get(measure) is not None else 0, reverse=True)
+                    sorted_data = sorted(
+                        data,
+                        key=lambda x: (
+                            x.get(measure, 0) if x.get(measure) is not None else 0
+                        ),
+                        reverse=True,
+                    )
 
                     highest = sorted_data[0]
                     lowest = sorted_data[-1]
@@ -94,12 +104,18 @@ class IntelligenceEngine:
                     if highest_val > 0 and lowest_val > 0:
                         ratio = highest_val / lowest_val
                         if ratio >= 2:
-                            observations.append(f"{highest.get(dimension)} {ratio:.1f}x higher {measure} than {lowest.get(dimension)}")
+                            observations.append(
+                                f"{highest.get(dimension)} {ratio:.1f}x higher {measure} than {lowest.get(dimension)}"
+                            )
                         else:
                             diff_pct = ((highest_val - lowest_val) / lowest_val) * 100
-                            observations.append(f"{highest.get(dimension)} {diff_pct:.0f}% higher {measure}")
+                            observations.append(
+                                f"{highest.get(dimension)} {diff_pct:.0f}% higher {measure}"
+                            )
                     else:
-                        observations.append(f"Range: {highest.get(dimension)} ({highest_val}) to {lowest.get(dimension)} ({lowest_val})")
+                        observations.append(
+                            f"Range: {highest.get(dimension)} ({highest_val}) to {lowest.get(dimension)} ({lowest_val})"
+                        )
 
         # Add statistical context if available
         if statistical_analysis:
@@ -138,7 +154,9 @@ class IntelligenceEngine:
 
         return " | ".join(observations)
 
-    def _get_business_context(self, model: str, measures: List[str], data: List[Dict]) -> str:
+    def _get_business_context(
+        self, model: str, measures: List[str], data: List[Dict]
+    ) -> str:
         """Add business context based on benchmarks and industry standards"""
 
         if not measures or not data:
@@ -189,7 +207,7 @@ class IntelligenceEngine:
         result: Dict[str, Any],
         context: str,
         current_dimensions: List[str] = [],
-        current_measures: List[str] = []
+        current_measures: List[str] = [],
     ) -> List[Dict[str, str]]:
         """
         Suggest logical next analysis questions based on current results.
@@ -201,7 +219,12 @@ class IntelligenceEngine:
         data = result.get("data", [])
 
         if not data:
-            return [{"question": "Try a different time period or filter", "reason": "No data returned"}]
+            return [
+                {
+                    "question": "Try a different time period or filter",
+                    "reason": "No data returned",
+                }
+            ]
 
         # Suggest drilling down if we have grouped results
         if len(data) > 1 and current_dimensions:
@@ -210,64 +233,84 @@ class IntelligenceEngine:
             # Find interesting values to drill into
             if current_measures:
                 measure = current_measures[0]
-                sorted_data = sorted(data, key=lambda x: x.get(measure, 0) if x.get(measure) is not None else 0, reverse=True)
+                sorted_data = sorted(
+                    data,
+                    key=lambda x: (
+                        x.get(measure, 0) if x.get(measure) is not None else 0
+                    ),
+                    reverse=True,
+                )
 
                 if len(sorted_data) >= 2:
                     top_value = sorted_data[0].get(dim)
-                    suggestions.append({
-                        "question": f"What drives high {measure} in {top_value}?",
-                        "reason": f"Drill into top performer"
-                    })
+                    suggestions.append(
+                        {
+                            "question": f"What drives high {measure} in {top_value}?",
+                            "reason": f"Drill into top performer",
+                        }
+                    )
 
         # Suggest time-based analysis
         if "conversion_rate" in current_measures:
-            suggestions.append({
-                "question": "How has conversion rate changed over time?",
-                "reason": "Track trend of key metric"
-            })
+            suggestions.append(
+                {
+                    "question": "How has conversion rate changed over time?",
+                    "reason": "Track trend of key metric",
+                }
+            )
 
         if "events_per_user" in current_measures:
-            suggestions.append({
-                "question": "Which features drive highest engagement?",
-                "reason": "Understand engagement drivers"
-            })
+            suggestions.append(
+                {
+                    "question": "Which features drive highest engagement?",
+                    "reason": "Understand engagement drivers",
+                }
+            )
 
         # Suggest statistical testing if comparing groups
         if len(data) > 1 and current_dimensions:
-            suggestions.append({
-                "question": f"Is this difference in {current_measures[0] if current_measures else 'metrics'} by {current_dimensions[0]} statistically significant?",
-                "reason": "Validate observed differences"
-            })
+            suggestions.append(
+                {
+                    "question": f"Is this difference in {current_measures[0] if current_measures else 'metrics'} by {current_dimensions[0]} statistically significant?",
+                    "reason": "Validate observed differences",
+                }
+            )
 
         # Suggest cross-model analysis
         if context and "users" in context:
-            suggestions.append({
-                "question": "How does feature usage vary by plan type?",
-                "reason": "Connect user segments to behavior"
-            })
+            suggestions.append(
+                {
+                    "question": "How does feature usage vary by plan type?",
+                    "reason": "Connect user segments to behavior",
+                }
+            )
 
         if context and "events" in context:
-            suggestions.append({
-                "question": "What's the retention rate for high-engagement users?",
-                "reason": "Link engagement to retention"
-            })
+            suggestions.append(
+                {
+                    "question": "What's the retention rate for high-engagement users?",
+                    "reason": "Link engagement to retention",
+                }
+            )
 
         # Default suggestions if we have no specific patterns
         if not suggestions:
-            suggestions.extend([
-                {
-                    "question": "What are the key trends over time?",
-                    "reason": "Understand temporal patterns"
-                },
-                {
-                    "question": "How do different user segments compare?",
-                    "reason": "Identify segment differences"
-                },
-                {
-                    "question": "Which factors correlate with this outcome?",
-                    "reason": "Find potential drivers"
-                }
-            ])
+            suggestions.extend(
+                [
+                    {
+                        "question": "What are the key trends over time?",
+                        "reason": "Understand temporal patterns",
+                    },
+                    {
+                        "question": "How do different user segments compare?",
+                        "reason": "Identify segment differences",
+                    },
+                    {
+                        "question": "Which factors correlate with this outcome?",
+                        "reason": "Find potential drivers",
+                    },
+                ]
+            )
 
         return suggestions[:4]  # Limit to 4 suggestions
 
@@ -275,7 +318,7 @@ class IntelligenceEngine:
         self,
         current_result: Optional[Dict[str, Any]] = None,
         context: Optional[str] = None,
-        model: Optional[str] = None
+        model: Optional[str] = None,
     ) -> List[Dict[str, str]]:
         """
         Suggest analysis paths based on current context and model.
@@ -285,87 +328,94 @@ class IntelligenceEngine:
 
         # Model-specific starting questions
         if model == "users":
-            suggestions.extend([
-                {
-                    "question": "What's our conversion rate by plan type?",
-                    "reason": "Understand pricing tier performance"
-                },
-                {
-                    "question": "How does user distribution vary by industry?",
-                    "reason": "Identify target market concentration"
-                },
-                {
-                    "question": "What's the signup trend over time?",
-                    "reason": "Track growth patterns"
-                }
-            ])
+            suggestions.extend(
+                [
+                    {
+                        "question": "What's our conversion rate by plan type?",
+                        "reason": "Understand pricing tier performance",
+                    },
+                    {
+                        "question": "How does user distribution vary by industry?",
+                        "reason": "Identify target market concentration",
+                    },
+                    {
+                        "question": "What's the signup trend over time?",
+                        "reason": "Track growth patterns",
+                    },
+                ]
+            )
 
         elif model == "events":
-            suggestions.extend([
-                {
-                    "question": "Which features are most popular?",
-                    "reason": "Identify core product usage"
-                },
-                {
-                    "question": "How does engagement vary by plan type?",
-                    "reason": "Connect usage to monetization"
-                },
-                {
-                    "question": "What's the daily active user trend?",
-                    "reason": "Monitor engagement health"
-                }
-            ])
+            suggestions.extend(
+                [
+                    {
+                        "question": "Which features are most popular?",
+                        "reason": "Identify core product usage",
+                    },
+                    {
+                        "question": "How does engagement vary by plan type?",
+                        "reason": "Connect usage to monetization",
+                    },
+                    {
+                        "question": "What's the daily active user trend?",
+                        "reason": "Monitor engagement health",
+                    },
+                ]
+            )
 
         elif model == "engagement":
-            suggestions.extend([
-                {
-                    "question": "What's our current DAU/MAU stickiness?",
-                    "reason": "Measure engagement frequency"
-                },
-                {
-                    "question": "How does retention vary by signup cohort?",
-                    "reason": "Track cohort performance"
-                },
-                {
-                    "question": "What's the 7-day retention rate?",
-                    "reason": "Assess onboarding success"
-                }
-            ])
+            suggestions.extend(
+                [
+                    {
+                        "question": "What's our current DAU/MAU stickiness?",
+                        "reason": "Measure engagement frequency",
+                    },
+                    {
+                        "question": "How does retention vary by signup cohort?",
+                        "reason": "Track cohort performance",
+                    },
+                    {
+                        "question": "What's the 7-day retention rate?",
+                        "reason": "Assess onboarding success",
+                    },
+                ]
+            )
 
         # Context-based suggestions
         if current_result and current_result.get("data"):
             # If we have results, suggest drilling deeper
             data = current_result["data"]
             if len(data) > 1:
-                suggestions.append({
-                    "question": "What explains these differences?",
-                    "reason": "Understand variation drivers"
-                })
+                suggestions.append(
+                    {
+                        "question": "What explains these differences?",
+                        "reason": "Understand variation drivers",
+                    }
+                )
 
         # General analytical approaches
         if not suggestions:
-            suggestions.extend([
-                {
-                    "question": "What are our key performance indicators?",
-                    "reason": "Establish baseline metrics"
-                },
-                {
-                    "question": "Which user segments are most valuable?",
-                    "reason": "Identify high-value cohorts"
-                },
-                {
-                    "question": "What drives user engagement?",
-                    "reason": "Find engagement levers"
-                }
-            ])
+            suggestions.extend(
+                [
+                    {
+                        "question": "What are our key performance indicators?",
+                        "reason": "Establish baseline metrics",
+                    },
+                    {
+                        "question": "Which user segments are most valuable?",
+                        "reason": "Identify high-value cohorts",
+                    },
+                    {
+                        "question": "What drives user engagement?",
+                        "reason": "Find engagement levers",
+                    },
+                ]
+            )
 
         return suggestions
 
     async def interpret_statistical_results(
-        self,
-        test_results: Dict[str, Any],
-        dimensions: List[str],
-        measures: List[str]
+        self, test_results: Dict[str, Any], dimensions: List[str], measures: List[str]
     ) -> str:
         """
         Generate natural language interpretation of statistical test results.
@@ -426,9 +476,13 @@ class IntelligenceEngine:
             measure_name = measures[0] if measures else "outcome"
 
             if p_value and p_value < 0.05 and effect_size and effect_size > 0.2:
-                interpretations.append(f"Meaningful difference in {measure_name} across {dim_name}")
+                interpretations.append(
+                    f"Meaningful difference in {measure_name} across {dim_name}"
+                )
             elif p_value and p_value < 0.05 and effect_size and effect_size <= 0.2:
-                interpretations.append(f"Statistically significant but small practical difference")
+                interpretations.append(
+                    f"Statistically significant but small practical difference"
+                )
 
         return " | ".join(interpretations)
 

@@ -8,14 +8,15 @@ Creates analytics.duckdb with 3 tables:
 - sessions
 """
 
+from pathlib import Path
+
 import duckdb
 import pandas as pd
-from pathlib import Path
 
 print("Loading product analytics data to DuckDB...")
 
 # Create database connection
-db_path = Path('semantic-layer/data/analytics.duckdb')
+db_path = Path("semantic-layer/data/analytics.duckdb")
 print(f"\nCreating database: {db_path}")
 
 con = duckdb.connect(str(db_path))
@@ -25,9 +26,10 @@ con = duckdb.connect(str(db_path))
 # ============================================================================
 
 print("\n1. Loading users table...")
-users_df = pd.read_csv('semantic-layer/data/users.csv')
+users_df = pd.read_csv("semantic-layer/data/users.csv")
 
-con.execute("""
+con.execute(
+    """
     CREATE TABLE IF NOT EXISTS users (
         user_id VARCHAR PRIMARY KEY,
         signup_date DATE,
@@ -36,7 +38,8 @@ con.execute("""
         company_size VARCHAR,
         country VARCHAR
     )
-""")
+"""
+)
 
 con.execute("DELETE FROM users")  # Clear if exists
 con.execute("INSERT INTO users SELECT * FROM users_df")
@@ -49,9 +52,10 @@ print(f"   ✓ Columns: {list(users_df.columns)}")
 # ============================================================================
 
 print("\n2. Loading events table...")
-events_df = pd.read_csv('semantic-layer/data/events.csv')
+events_df = pd.read_csv("semantic-layer/data/events.csv")
 
-con.execute("""
+con.execute(
+    """
     CREATE TABLE IF NOT EXISTS events (
         event_id VARCHAR PRIMARY KEY,
         user_id VARCHAR,
@@ -61,7 +65,8 @@ con.execute("""
         session_id VARCHAR,
         FOREIGN KEY (user_id) REFERENCES users(user_id)
     )
-""")
+"""
+)
 
 con.execute("DELETE FROM events")
 con.execute("INSERT INTO events SELECT * FROM events_df")
@@ -74,9 +79,10 @@ print(f"   ✓ Columns: {list(events_df.columns)}")
 # ============================================================================
 
 print("\n3. Loading sessions table...")
-sessions_df = pd.read_csv('semantic-layer/data/sessions.csv')
+sessions_df = pd.read_csv("semantic-layer/data/sessions.csv")
 
-con.execute("""
+con.execute(
+    """
     CREATE TABLE IF NOT EXISTS sessions (
         session_id VARCHAR PRIMARY KEY,
         user_id VARCHAR,
@@ -86,7 +92,8 @@ con.execute("""
         event_count INTEGER,
         FOREIGN KEY (user_id) REFERENCES users(user_id)
     )
-""")
+"""
+)
 
 con.execute("DELETE FROM sessions")
 con.execute("INSERT INTO sessions SELECT * FROM sessions_df")
@@ -103,7 +110,9 @@ print("\n4. Creating indexes...")
 con.execute("CREATE INDEX IF NOT EXISTS idx_users_signup ON users(signup_date)")
 con.execute("CREATE INDEX IF NOT EXISTS idx_users_plan ON users(plan_type)")
 con.execute("CREATE INDEX IF NOT EXISTS idx_events_user ON events(user_id)")
-con.execute("CREATE INDEX IF NOT EXISTS idx_events_timestamp ON events(event_timestamp)")
+con.execute(
+    "CREATE INDEX IF NOT EXISTS idx_events_timestamp ON events(event_timestamp)"
+)
 con.execute("CREATE INDEX IF NOT EXISTS idx_events_session ON events(session_id)")
 con.execute("CREATE INDEX IF NOT EXISTS idx_sessions_user ON sessions(user_id)")
 con.execute("CREATE INDEX IF NOT EXISTS idx_sessions_date ON sessions(session_date)")
@@ -129,11 +138,14 @@ print(f"   ✓ sessions: {sessions_count} rows")
 print("\n6. Sample queries:")
 
 print("\n   Plan type distribution:")
-plan_dist = con.execute("SELECT plan_type, COUNT(*) as count FROM users GROUP BY plan_type ORDER BY count DESC").df()
+plan_dist = con.execute(
+    "SELECT plan_type, COUNT(*) as count FROM users GROUP BY plan_type ORDER BY count DESC"
+).df()
 print(plan_dist.to_string(index=False))
 
 print("\n   Daily active users (last 7 days):")
-dau = con.execute("""
+dau = con.execute(
+    """
     SELECT
         DATE(event_timestamp) as date,
         COUNT(DISTINCT user_id) as dau
@@ -142,11 +154,13 @@ dau = con.execute("""
     GROUP BY DATE(event_timestamp)
     ORDER BY date DESC
     LIMIT 7
-""").df()
+"""
+).df()
 print(dau.to_string(index=False))
 
 print("\n   Top 5 features by usage:")
-top_features = con.execute("""
+top_features = con.execute(
+    """
     SELECT
         feature_name,
         COUNT(*) as usage_count,
@@ -156,7 +170,8 @@ top_features = con.execute("""
     GROUP BY feature_name
     ORDER BY usage_count DESC
     LIMIT 5
-""").df()
+"""
+).df()
 print(top_features.to_string(index=False))
 
 # ============================================================================
