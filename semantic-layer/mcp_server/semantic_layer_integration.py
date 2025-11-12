@@ -364,11 +364,61 @@ class SemanticLayerManager:
             "table": table_name,
         }
 
-    async def execute_query(self, query_info: Dict[str, Any]) -> Dict[str, Any]:
-        """Execute SQL query and return results with metadata"""
+    async def execute_query(
+        self, query_info: Dict[str, Any], validate: bool = False, validator=None
+    ) -> Dict[str, Any]:
+        """
+        Execute SQL query and return results with metadata
+
+        Args:
+            query_info: Query information including SQL and metadata
+            validate: Whether to validate query before execution (default: False)
+            validator: QueryValidator instance (required if validate=True)
+
+        Returns:
+            Query results with metadata, including validation info if validate=True
+        """
 
         sql = query_info["sql"]
         start_time = time.time()
+
+        # Optional validation before execution
+        validation_result = None
+        if validate and validator:
+            try:
+                ibis_expr = self.connection.sql(sql)
+                validation_result = await validator.validate_ibis_query(
+                    ibis_expr, query_info
+                )
+
+                if not validation_result.valid:
+                    # Validation failed, return error without executing
+                    return {
+                        "error": validation_result.error,
+                        "validation": {
+                            "valid": False,
+                            "error": validation_result.error,
+                            "complexity_score": validation_result.complexity_score,
+                            "estimated_rows": validation_result.estimated_rows,
+                        },
+                        "data": [],
+                        "columns": [],
+                        "row_count": 0,
+                        "column_count": 0,
+                        "execution_time_ms": 0,
+                        "timestamp": datetime.now().isoformat(),
+                        "executed": False,
+                    }
+
+                logger.info(
+                    f"Query validation passed: complexity={validation_result.complexity_score:.1f}, "
+                    f"estimated_rows={validation_result.estimated_rows}, "
+                    f"warnings={len(validation_result.warnings)}"
+                )
+
+            except Exception as e:
+                logger.error(f"Validation error: {e}", exc_info=True)
+                # Continue with execution even if validation fails
 
         try:
             # Execute query using Ibis
@@ -399,14 +449,27 @@ class SemanticLayerManager:
             row_count = len(data)
             column_count = len(result_df.columns) if row_count > 0 else 0
 
-            return {
+            result = {
                 "data": data,
                 "columns": list(result_df.columns),
                 "row_count": row_count,
                 "column_count": column_count,
                 "execution_time_ms": round(execution_time * 1000, 2),
                 "timestamp": datetime.now().isoformat(),
+                "executed": True,
             }
+
+            # Add validation metadata if validation was performed
+            if validation_result:
+                result["validation"] = {
+                    "valid": True,
+                    "complexity_score": validation_result.complexity_score,
+                    "estimated_rows": validation_result.estimated_rows,
+                    "actual_rows": row_count,
+                    "warnings": validation_result.warnings,
+                }
+
+            return result
 
         except Exception as e:
             execution_time = time.time() - start_time
@@ -419,6 +482,7 @@ class SemanticLayerManager:
                 "column_count": 0,
                 "execution_time_ms": round(execution_time * 1000, 2),
                 "timestamp": datetime.now().isoformat(),
+                "executed": False,
             }
 
     async def get_sample_queries(self, model: str) -> List[Dict[str, Any]]:

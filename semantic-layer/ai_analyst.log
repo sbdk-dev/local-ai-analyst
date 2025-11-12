@@ -100,3 +100,94 @@
 2025-11-11 21:04:49,125 - mcp_server.semantic_layer_integration - INFO - Building model list from 3 loaded models
 2025-11-11 21:04:49,125 - mcp_server.semantic_layer_integration - INFO - Successfully built and cached list of 3 models
 2025-11-11 21:04:49,244 - mcp_server.semantic_layer_integration - INFO - Loaded 3 semantic models
+2025-11-12 00:56:25,723 - mcp_server.model_discovery - INFO - Loading embedding model: all-MiniLM-L6-v2
+2025-11-12 00:56:25,724 - mcp_server.model_discovery - INFO - Loading embedding model: all-MiniLM-L6-v2
+2025-11-12 00:56:25,732 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: cpu
+2025-11-12 00:56:25,732 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2025-11-12 00:56:25,733 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: cpu
+2025-11-12 00:56:25,733 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2025-11-12 00:56:25,829 - sentence_transformers.SentenceTransformer - WARNING - No sentence-transformers model found with name sentence-transformers/all-MiniLM-L6-v2. Creating a new one with mean pooling.
+2025-11-12 00:56:25,834 - sentence_transformers.SentenceTransformer - WARNING - No sentence-transformers model found with name sentence-transformers/all-MiniLM-L6-v2. Creating a new one with mean pooling.
+2025-11-12 00:56:53,170 - mcp_server.model_discovery - INFO - Loading embedding model: all-MiniLM-L6-v2
+2025-11-12 00:56:53,177 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: cpu
+2025-11-12 00:56:53,177 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2025-11-12 00:56:53,274 - sentence_transformers.SentenceTransformer - WARNING - No sentence-transformers model found with name sentence-transformers/all-MiniLM-L6-v2. Creating a new one with mean pooling.
+2025-11-12 00:57:43,950 - mcp_server.semantic_layer_integration - INFO - Loaded 3 semantic models
+2025-11-12 00:57:43,951 - mcp_server.query_validator - INFO - QueryValidator initialized: max_complexity=80.0, max_estimated_rows=100,000
+2025-11-12 00:57:43,958 - mcp_server.query_validator - WARNING - EXPLAIN query failed: Parser Error: syntax error at or near "SELECT"
+
+LINE 1: DESCRIBE EXPLAIN SELECT plan_type, COUNT(DISTINCT user_id) AS total_users...
+                         ^
+2025-11-12 00:58:45,498 - mcp_server.model_discovery - INFO - Found 3 model files in /home/user/claude-analyst/semantic-layer/models
+2025-11-12 00:58:45,510 - mcp_server.model_discovery - INFO - Loaded model config: events (1979 chars)
+2025-11-12 00:58:45,522 - mcp_server.model_discovery - INFO - Loaded model config: engagement (1531 chars)
+2025-11-12 00:58:45,527 - mcp_server.model_discovery - INFO - Loaded model config: users (821 chars)
+2025-11-12 00:58:45,528 - mcp_server.model_discovery - INFO - Successfully loaded 3 model configurations
+2025-11-12 00:58:45,552 - mcp_server.model_discovery - INFO - Found 3 model files in /home/user/claude-analyst/semantic-layer/models
+2025-11-12 00:58:45,564 - mcp_server.model_discovery - INFO - Loaded model config: events (1979 chars)
+2025-11-12 00:58:45,577 - mcp_server.model_discovery - INFO - Loaded model config: engagement (1531 chars)
+2025-11-12 00:58:45,583 - mcp_server.model_discovery - INFO - Loaded model config: users (821 chars)
+2025-11-12 00:58:45,583 - mcp_server.model_discovery - INFO - Successfully loaded 3 model configurations
+2025-11-12 00:58:45,584 - mcp_server.model_discovery - INFO - Found 3 model files in /home/user/claude-analyst/semantic-layer/models
+2025-11-12 00:58:45,595 - mcp_server.model_discovery - INFO - Loaded model config: events (1979 chars)
+2025-11-12 00:58:45,607 - mcp_server.model_discovery - INFO - Loaded model config: engagement (1531 chars)
+2025-11-12 00:58:45,613 - mcp_server.model_discovery - INFO - Loaded model config: users (821 chars)
+2025-11-12 00:58:45,613 - mcp_server.model_discovery - INFO - Successfully loaded 3 model configurations
+2025-11-12 00:58:45,614 - mcp_server.model_discovery - INFO - Found 3 model files in /home/user/claude-analyst/semantic-layer/models
+2025-11-12 00:58:45,626 - mcp_server.model_discovery - INFO - Loaded model config: events (1979 chars)
+2025-11-12 00:58:45,639 - mcp_server.model_discovery - INFO - Loaded model config: engagement (1531 chars)
+2025-11-12 00:58:45,644 - mcp_server.model_discovery - INFO - Loaded model config: users (821 chars)
+2025-11-12 00:58:45,644 - mcp_server.model_discovery - INFO - Successfully loaded 3 model configurations
+2025-11-12 01:01:20,555 - mcp_server.model_discovery - INFO - Found 3 model files in /home/user/claude-analyst/semantic-layer/models
+2025-11-12 01:01:20,567 - mcp_server.model_discovery - INFO - Loaded model config: events (1979 chars)
+2025-11-12 01:01:20,579 - mcp_server.model_discovery - INFO - Loaded model config: engagement (1531 chars)
+2025-11-12 01:01:20,585 - mcp_server.model_discovery - INFO - Loaded model config: users (821 chars)
+2025-11-12 01:01:20,586 - mcp_server.model_discovery - INFO - Successfully loaded 3 model configurations
+2025-11-12 01:01:29,728 - mcp_server.model_discovery - INFO - Found 3 model files in /home/user/claude-analyst/semantic-layer/models
+2025-11-12 01:01:29,740 - mcp_server.model_discovery - INFO - Loaded model config: events (1979 chars)
+2025-11-12 01:01:29,754 - mcp_server.model_discovery - INFO - Loaded model config: engagement (1531 chars)
+2025-11-12 01:01:29,761 - mcp_server.model_discovery - INFO - Loaded model config: users (821 chars)
+2025-11-12 01:01:29,761 - mcp_server.model_discovery - INFO - Successfully loaded 3 model configurations
+2025-11-12 01:01:29,792 - mcp_server.model_discovery - INFO - Found 3 model files in models
+2025-11-12 01:01:29,803 - mcp_server.model_discovery - INFO - Loaded model config: events (1979 chars)
+2025-11-12 01:01:29,816 - mcp_server.model_discovery - INFO - Loaded model config: engagement (1531 chars)
+2025-11-12 01:01:29,822 - mcp_server.model_discovery - INFO - Loaded model config: users (821 chars)
+2025-11-12 01:01:29,822 - mcp_server.model_discovery - INFO - Successfully loaded 3 model configurations
+2025-11-12 01:01:35,738 - mcp_server.model_discovery - INFO - Found 3 model files in /home/user/claude-analyst/semantic-layer/models
+2025-11-12 01:01:35,752 - mcp_server.model_discovery - INFO - Loaded model config: events (1979 chars)
+2025-11-12 01:01:35,764 - mcp_server.model_discovery - INFO - Loaded model config: engagement (1531 chars)
+2025-11-12 01:01:35,769 - mcp_server.model_discovery - INFO - Loaded model config: users (821 chars)
+2025-11-12 01:01:35,770 - mcp_server.model_discovery - INFO - Successfully loaded 3 model configurations
+2025-11-12 01:05:53,045 - mcp_server.model_discovery - INFO - Found 3 model files in /home/user/claude-analyst/semantic-layer/models
+2025-11-12 01:05:53,057 - mcp_server.model_discovery - INFO - Loaded model config: events (1979 chars)
+2025-11-12 01:05:53,070 - mcp_server.model_discovery - INFO - Loaded model config: engagement (1531 chars)
+2025-11-12 01:05:53,076 - mcp_server.model_discovery - INFO - Loaded model config: users (821 chars)
+2025-11-12 01:05:53,076 - mcp_server.model_discovery - INFO - Successfully loaded 3 model configurations
+2025-11-12 01:05:53,102 - mcp_server.server - INFO - Starting AI Analyst MCP Server
+2025-11-12 01:05:53,102 - mcp_server.server - INFO - Semantic Layer: Boring SL + Ibis + DuckDB
+2025-11-12 01:05:53,103 - mcp_server.server - INFO - Intelligence: Execution-first + Auto-stats + Natural language
+2025-11-12 01:05:53,391 - mcp_server.semantic_layer_integration - INFO - Loaded 3 semantic models
+2025-11-12 01:05:53,391 - mcp_server.server - INFO - Semantic layer initialized successfully
+2025-11-12 01:05:53,416 - mcp_server.server - INFO - Database connected: {'file_size_mb': 9.26, 'tables': ['users', 'events', 'sessions'], 'models_loaded': 3}
+2025-11-12 01:05:53,416 - mcp_server.server - INFO - AI Analyst MCP Server ready!
+2025-11-12 01:10:03,882 - mcp_server.model_discovery - INFO - Found 3 model files in /home/user/claude-analyst/semantic-layer/models
+2025-11-12 01:10:03,894 - mcp_server.model_discovery - INFO - Loaded model config: events (1979 chars)
+2025-11-12 01:10:03,906 - mcp_server.model_discovery - INFO - Loaded model config: engagement (1531 chars)
+2025-11-12 01:10:03,912 - mcp_server.model_discovery - INFO - Loaded model config: users (821 chars)
+2025-11-12 01:10:03,912 - mcp_server.model_discovery - INFO - Successfully loaded 3 model configurations
+2025-11-12 01:10:04,497 - mcp_server.semantic_layer_integration - INFO - Loaded 3 semantic models
+2025-11-12 01:10:04,497 - mcp_server.semantic_layer_integration - INFO - Building model list from 3 loaded models
+2025-11-12 01:10:04,497 - mcp_server.semantic_layer_integration - INFO - Successfully built and cached list of 3 models
+2025-11-12 01:10:04,649 - mcp_server.semantic_layer_integration - INFO - Loaded 3 semantic models
+2025-11-12 01:11:31,399 - mcp_server.model_discovery - INFO - Found 3 model files in /home/user/claude-analyst/semantic-layer/models
+2025-11-12 01:11:31,412 - mcp_server.model_discovery - INFO - Loaded model config: events (1979 chars)
+2025-11-12 01:11:31,424 - mcp_server.model_discovery - INFO - Loaded model config: engagement (1531 chars)
+2025-11-12 01:11:31,430 - mcp_server.model_discovery - INFO - Loaded model config: users (821 chars)
+2025-11-12 01:11:31,430 - mcp_server.model_discovery - INFO - Successfully loaded 3 model configurations
+2025-11-12 01:11:31,456 - mcp_server.server - INFO - Starting AI Analyst MCP Server
+2025-11-12 01:11:31,457 - mcp_server.server - INFO - Semantic Layer: Boring SL + Ibis + DuckDB
+2025-11-12 01:11:31,457 - mcp_server.server - INFO - Intelligence: Execution-first + Auto-stats + Natural language
+2025-11-12 01:11:31,773 - mcp_server.semantic_layer_integration - INFO - Loaded 3 semantic models
+2025-11-12 01:11:31,774 - mcp_server.server - INFO - Semantic layer initialized successfully
+2025-11-12 01:11:31,803 - mcp_server.server - INFO - Database connected: {'file_size_mb': 9.26, 'tables': ['users', 'events', 'sessions'], 'models_loaded': 3}
+2025-11-12 01:11:31,803 - mcp_server.server - INFO - AI Analyst MCP Server ready!

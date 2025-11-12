@@ -28,7 +28,9 @@ logger = logging.getLogger(__name__)
 
 from .conversation_memory import ConversationMemory
 from .intelligence_layer import IntelligenceEngine
+from .model_discovery import ModelDiscovery
 from .query_optimizer import QueryOptimizer
+from .runtime_metrics import RuntimeMetricRegistry, get_registry
 # Import our semantic layer integration
 from .semantic_layer_integration import SemanticLayerManager
 from .statistical_testing import StatisticalTester
@@ -41,6 +43,14 @@ statistical_tester = StatisticalTester()
 conversation_memory = ConversationMemory()
 query_optimizer = QueryOptimizer()
 workflow_orchestrator = WorkflowOrchestrator()
+
+# Initialize model discovery with path to semantic models (lazy loading)
+models_path = Path(__file__).parent.parent / "models"
+model_discovery = ModelDiscovery(models_path, lazy_load=True)
+
+# Initialize runtime metrics registry
+runtime_metrics_storage = Path(__file__).parent.parent / "data" / "runtime_metrics.json"
+runtime_metrics_registry = get_registry(runtime_metrics_storage)
 
 # MCP server configuration (temporary, will be recreated with lifespan)
 mcp = FastMCP("ai-analyst")
@@ -258,6 +268,69 @@ async def get_model(model_name: str) -> Dict[str, Any]:
         return {
             "error": str(e),
             "message": f"Failed to retrieve model info for '{model_name}'",
+        }
+
+
+@mcp.tool()
+async def discover_models_for_question(
+    question: str, top_k: int = 3, similarity_threshold: float = 0.3
+) -> Dict[str, Any]:
+    """
+    Discover relevant semantic models for a natural language question using vector similarity.
+
+    Uses lightweight SentenceTransformers to match questions to model descriptions.
+    Returns ranked models with similarity scores.
+
+    Args:
+        question: User's question in natural language
+        top_k: Number of models to suggest (default: 3)
+        similarity_threshold: Minimum similarity score 0-1 (default: 0.3)
+
+    Returns:
+        Ranked list of relevant models with similarity scores
+
+    Examples:
+        Q: "What's our monthly revenue growth?"
+        Returns: [
+            {"model": "users", "similarity": 0.87, "description": "..."},
+            {"model": "events", "similarity": 0.65, "description": "..."},
+        ]
+
+        Q: "Show me user churn rates"
+        Returns: [
+            {"model": "engagement", "similarity": 0.92, "description": "..."},
+            {"model": "users", "similarity": 0.58, "description": "..."},
+        ]
+
+        Q: "Feature adoption by plan type"
+        Returns: [
+            {"model": "events", "similarity": 0.88, "description": "..."},
+            {"model": "users", "similarity": 0.45, "description": "..."},
+        ]
+    """
+    try:
+        # Discover relevant models using vector similarity
+        results = await model_discovery.discover_models(
+            question, top_k=top_k, similarity_threshold=similarity_threshold
+        )
+
+        return {
+            "question": question,
+            "relevant_models": results,
+            "top_model": results[0]["model"] if results else None,
+            "status": "success",
+            "suggestion": f"Use '{results[0]['model']}' model for this question"
+            if results
+            else "No models found above similarity threshold",
+        }
+
+    except Exception as e:
+        logger.error(f"Model discovery failed: {str(e)}")
+        logger.error(traceback.format_exc())
+        return {
+            "error": str(e),
+            "message": "Failed to discover models for question",
+            "status": "error",
         }
 
 
@@ -1201,6 +1274,193 @@ def _extract_feature_recommendations(results: Dict[str, Any]) -> List[str]:
         recommendations.append("Feature usage impact on churn analyzed")
 
     return recommendations
+
+
+# ============================================================================
+# Runtime Metrics Management Tools
+# ============================================================================
+
+
+@mcp.tool()
+async def define_custom_metric(
+    name: str,
+    type: str,
+    model: str,
+    description: str = "",
+    dimension: Optional[str] = None,
+    numerator: Optional[str] = None,
+    denominator: Optional[str] = None,
+    sql: Optional[str] = None,
+    filters: Optional[Dict[str, Any]] = None,
+    tags: Optional[List[str]] = None,
+) -> Dict[str, Any]:
+    """
+    Define a custom metric at runtime without editing YAML files.
+
+    This tool allows you to create ad-hoc metrics for analysis without modifying
+    the semantic model configuration files. Metrics are validated against the
+    semantic model and persisted to disk.
+
+    Args:
+        name: Unique metric name (e.g., "power_users", "high_value_customers")
+        type: Metric type - one of:
+            - "count": Count rows
+            - "count_distinct": Count unique values of a dimension
+            - "sum": Sum values of a dimension
+            - "avg": Average values of a dimension
+            - "ratio": Ratio of two metrics (requires numerator/denominator)
+            - "custom_sql": Custom SQL expression (requires sql parameter)
+        model: Semantic model this metric belongs to (e.g., "users", "events")
+        description: Human-readable description of what this metric measures
+        dimension: Column to aggregate for count_distinct, sum, or avg types
+        numerator: Numerator metric name for ratio types
+        denominator: Denominator metric name for ratio types
+        sql: Custom SQL expression for custom_sql types
+        filters: Dictionary of filters to apply (e.g., {"plan_type": "paid", "login_count__gt": 100})
+        tags: List of tags for organizing metrics (e.g., ["engagement", "core"])
+
+    Returns:
+        Created metric details and status
+
+    Examples:
+        # Count distinct power users
+        define_custom_metric(
+            name="power_users",
+            type="count_distinct",
+            model="users",
+            dimension="user_id",
+            filters={"login_count__gt": 100},
+            description="Users with 100+ logins",
+            tags=["engagement"]
+        )
+
+        # Conversion rate ratio
+        define_custom_metric(
+            name="conversion_rate",
+            type="ratio",
+            model="users",
+            numerator="paid_users",
+            denominator="total_users",
+            description="Free to paid conversion rate"
+        )
+
+        # Custom SQL calculation
+        define_custom_metric(
+            name="avg_revenue_per_user",
+            type="custom_sql",
+            model="users",
+            sql="SUM(revenue) / COUNT(DISTINCT user_id)",
+            description="Average revenue per user"
+        )
+    """
+    try:
+        result = await runtime_metrics_registry.define_metric(
+            name=name,
+            type=type,
+            model=model,
+            semantic_manager=semantic_manager,
+            description=description,
+            dimension=dimension,
+            numerator=numerator,
+            denominator=denominator,
+            sql=sql,
+            filters=filters or {},
+            tags=tags or [],
+        )
+
+        return result
+
+    except Exception as e:
+        logger.error(f"Failed to define custom metric: {e}")
+        return {
+            "error": str(e),
+            "message": "Failed to define custom metric",
+            "status": "error",
+        }
+
+
+@mcp.tool()
+async def list_custom_metrics(
+    model: Optional[str] = None, tags: Optional[List[str]] = None
+) -> Dict[str, Any]:
+    """
+    List all custom metrics with optional filtering.
+
+    Returns all runtime-defined custom metrics. You can filter by semantic model
+    or by tags to find specific metrics.
+
+    Args:
+        model: Filter by model name (e.g., "users", "events")
+        tags: Filter by tags - returns metrics with any matching tag
+
+    Returns:
+        List of custom metrics with their definitions
+
+    Examples:
+        # List all custom metrics
+        list_custom_metrics()
+
+        # List metrics for users model
+        list_custom_metrics(model="users")
+
+        # List metrics tagged as "engagement"
+        list_custom_metrics(tags=["engagement"])
+
+        # List engagement metrics for users model
+        list_custom_metrics(model="users", tags=["engagement"])
+    """
+    try:
+        from dataclasses import asdict
+
+        metrics = runtime_metrics_registry.list_metrics(model=model, tags=tags)
+
+        return {
+            "metrics": [asdict(m) for m in metrics],
+            "total_count": len(metrics),
+            "filtered_by": {
+                "model": model,
+                "tags": tags,
+            },
+            "status": "success",
+        }
+
+    except Exception as e:
+        logger.error(f"Failed to list custom metrics: {e}")
+        return {
+            "error": str(e),
+            "message": "Failed to list custom metrics",
+            "status": "error",
+        }
+
+
+@mcp.tool()
+async def delete_custom_metric(name: str) -> Dict[str, Any]:
+    """
+    Delete a custom metric by name.
+
+    Removes a runtime-defined custom metric from the registry. This does not
+    affect metrics defined in YAML configuration files.
+
+    Args:
+        name: Name of the metric to delete
+
+    Returns:
+        Deletion status
+
+    Example:
+        delete_custom_metric(name="temp_test_metric")
+    """
+    try:
+        result = await runtime_metrics_registry.delete_metric(name)
+        return result
+
+    except Exception as e:
+        logger.error(f"Failed to delete custom metric: {e}")
+        return {
+            "error": str(e),
+            "message": f"Failed to delete metric '{name}'",
+            "status": "error",
+        }
 
 
 # ============================================================================
