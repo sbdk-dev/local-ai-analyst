@@ -200,3 +200,12 @@ LINE 1: DESCRIBE EXPLAIN SELECT plan_type, COUNT(DISTINCT user_id) AS total_user
 2025-11-14 17:53:23,156 - mcp_server.semantic_layer_integration - INFO - Building model list from 3 loaded models
 2025-11-14 17:53:23,156 - mcp_server.semantic_layer_integration - INFO - Successfully built and cached list of 3 models
 2025-11-14 17:53:23,281 - mcp_server.semantic_layer_integration - INFO - Loaded 3 semantic models
+2025-11-14 18:29:30,377 - mcp_server.model_discovery - INFO - Found 3 model files in /home/user/claude-analyst/semantic-layer/models
+2025-11-14 18:29:30,384 - mcp_server.model_discovery - INFO - Loaded model config: users (821 chars)
+2025-11-14 18:29:30,397 - mcp_server.model_discovery - INFO - Loaded model config: engagement (1531 chars)
+2025-11-14 18:29:30,407 - mcp_server.model_discovery - INFO - Loaded model config: events (1979 chars)
+2025-11-14 18:29:30,407 - mcp_server.model_discovery - INFO - Successfully loaded 3 model configurations
+2025-11-14 18:29:30,717 - mcp_server.semantic_layer_integration - INFO - Loaded 3 semantic models
+2025-11-14 18:29:30,717 - mcp_server.semantic_layer_integration - INFO - Building model list from 3 loaded models
+2025-11-14 18:29:30,717 - mcp_server.semantic_layer_integration - INFO - Successfully built and cached list of 3 models
+2025-11-14 18:29:30,830 - mcp_server.semantic_layer_integration - INFO - Loaded 3 semantic models

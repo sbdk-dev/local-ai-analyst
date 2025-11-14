@@ -1,8 +1,13 @@
-# Claude Analyst - AI Data Analyst for Claude Desktop
+# 🤖 Claude-Analyst
 
-> Ask questions about your data in plain English. Get statistically rigorous answers instantly.
+> **AI-powered data analyst with semantic layer, statistical rigor, and natural language insights**
 
-**Status**: v1.0 Production Ready ✅ | 100% Test Pass Rate | [Quick Start →](QUICK_START.md) | Setup in 5 minutes
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
+[![Tests](https://img.shields.io/badge/tests-7%2F7%20passing-brightgreen.svg)]()
+[![MCP Compatible](https://img.shields.io/badge/MCP-compatible-purple.svg)](https://modelcontextprotocol.io/)
+
+**Status**: v1.0 Production Ready ✅ | Works with Claude Desktop & ChatGPT Desktop | [Quick Start →](QUICK_START.md)
 
 ---
 
@@ -52,23 +57,31 @@
 ## Quick Start
 
 ### Prerequisites
-- [Claude Desktop](https://claude.ai/download) installed
-- Python 3.11+ ([check version](https://www.python.org/downloads/))
-- 5 minutes
+- **Claude Desktop** OR **ChatGPT Desktop** (or both!)
+- Python 3.10+ ([download](https://www.python.org/downloads/))
+- 5 minutes for setup
 
-### Install
+### Quick Install
 
 ```bash
-# 1. Install UV package manager (if not already installed)
+# 1. Install UV package manager
 curl -LsSf https://astral.sh/uv/install.sh | sh
 
 # 2. Clone and setup
 git clone https://github.com/yourusername/claude-analyst.git
-cd claude-analyst/semantic-layer
-uv sync
+cd claude-analyst
+./scripts/setup.sh
 
-# 3. Configure Claude Desktop
-# Add to ~/Library/Application Support/Claude/claude_desktop_config.json:
+# 3. Test the system
+cd semantic-layer
+uv run python test_all_functionality.py
+# Expected: ✅ Tests Passed: 7 | Success Rate: 100.0%
+```
+
+### Option A: Claude Desktop Setup
+
+```bash
+# 1. Add to ~/Library/Application Support/Claude/claude_desktop_config.json:
 {
   "mcpServers": {
     "ai-analyst": {
@@ -79,14 +92,33 @@ uv sync
   }
 }
 
-# Note: Use full path to uv (/opt/homebrew/bin/uv on macOS with Homebrew)
-# GUI apps don't inherit shell PATH, so "uv" alone may not work
+# 2. Find your uv path
+which uv  # Use this full path in config above
 
-# 4. Restart Claude Desktop and test
-# Ask: "List available data models"
+# 3. Restart Claude Desktop
+# 4. Ask: "List available data models"
 ```
 
-**For detailed setup**: See [QUICK_START.md](QUICK_START.md)
+### Option B: ChatGPT Desktop Setup
+
+```bash
+# 1. Set your OpenAI API key
+export OPENAI_API_KEY="sk-your-key-here"
+
+# 2. Start the OpenAI API server
+cd semantic-layer
+uv run python run_openai_server.py
+# Server starts on http://localhost:8000
+
+# 3. Configure ChatGPT Desktop
+# Settings → Beta Features → Actions → Add Custom Action
+# URL: http://localhost:8000
+# Auth: Bearer token (optional)
+
+# 4. Start chatting!
+```
+
+**Detailed guides**: [QUICK_START.md](QUICK_START.md) | [Claude Desktop Setup](semantic-layer/docs/CLAUDE_DESKTOP_SETUP.md)
 
 ---
 
