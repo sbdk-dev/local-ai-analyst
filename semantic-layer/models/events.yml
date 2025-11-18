@@ -1,0 +1,246 @@
+# Events Semantic Model
+# User actions and feature usage events
+
+model:
+  name: events
+  description: "User actions, feature usage, and behavioral events"
+  table: events
+
+dimensions:
+  - name: event_id
+    type: string
+    primary_key: true
+    description: "Unique event identifier"
+
+  - name: user_id
+    type: string
+    foreign_key: users.user_id
+    description: "User who triggered the event"
+
+  - name: event_timestamp
+    type: timestamp
+    description: "When the event occurred"
+
+  - name: event_type
+    type: string
+    description: "Type of event (signup, login, feature_use, export, logout)"
+
+  - name: feature_name
+    type: string
+    description: "Specific feature that was used"
+
+  - name: session_id
+    type: string
+    foreign_key: sessions.session_id
+    description: "Session this event belongs to"
+
+  # Derived time dimensions
+  - name: event_date
+    type: date
+    sql: "DATE(event_timestamp)"
+    description: "Date of the event"
+
+  - name: event_hour
+    type: integer
+    sql: "HOUR(event_timestamp)"
+    description: "Hour of day (0-23)"
+
+  - name: event_day_of_week
+    type: string
+    sql: "DAYNAME(event_timestamp)"
+    description: "Day of week"
+
+measures:
+  - name: total_events
+    type: count
+    description: "Total number of events"
+
+  - name: unique_users
+    type: count_distinct
+    dimension: user_id
+    description: "Unique users who triggered events"
+
+  - name: events_per_user
+    type: ratio
+    numerator: total_events
+    denominator: unique_users
+    description: "Average events per user"
+
+  - name: feature_usage
+    type: count
+    filters:
+      - event_type = 'feature_use'
+    description: "Number of feature usage events"
+
+  - name: unique_feature_users
+    type: count_distinct
+    dimension: user_id
+    filters:
+      - event_type = 'feature_use'
+    description: "Users who used any feature"
+
+  - name: feature_adoption_rate
+    type: ratio
+    numerator: unique_feature_users
+    denominator: unique_users
+    description: "Percentage of users who used features"
+    format: percentage
+
+  - name: logins
+    type: count
+    filters:
+      - event_type = 'login'
+    description: "Number of login events"
+
+  - name: unique_login_users
+    type: count_distinct
+    dimension: user_id
+    filters:
+      - event_type = 'login'
+    description: "Users who logged in"
+
+# Time-series measures for engagement analysis
+time_series_measures:
+  - name: daily_events
+    type: count
+    time_dimension: event_date
+    description: "Events per day"
+
+  - name: daily_active_users
+    type: count_distinct
+    dimension: user_id
+    time_dimension: event_date
+    description: "Daily active users (DAU)"
+
+  - name: hourly_events
+    type: count
+    time_dimension: event_hour
+    description: "Events by hour of day"
+
+# Feature-specific measures
+feature_measures:
+  - name: dashboard_views
+    type: count
+    filters:
+      - feature_name = 'dashboard_view'
+    description: "Dashboard view events"
+
+  - name: report_exports
+    type: count
+    filters:
+      - feature_name = 'report_export'
+    description: "Report export events"
+
+  - name: integrations_setup
+    type: count
+    filters:
+      - feature_name = 'integration_setup'
+    description: "Integration setup events"
+
+# Business context
+context:
+  feature_importance:
+    high_value:
+      - report_export
+      - integration_setup
+      - api_call
+    engagement_indicators:
+      - dashboard_view
+      - collaboration_edit
+    activation_signals:
+      - report_create
+      - data_upload
+
+  benchmarks:
+    - metric: events_per_user
+      saas_median: 25
+      top_quartile: 50
+    - metric: feature_adoption_rate
+      industry_median: 0.60
+      top_quartile: 0.85
+
+# Sample queries
+sample_queries:
+  - description: "Most popular features"
+    query: |
+      SELECT
+        feature_name,
+        COUNT(*) as usage_count,
+        COUNT(DISTINCT user_id) as unique_users,
+        ROUND(COUNT(DISTINCT user_id) * 100.0 /
+              (SELECT COUNT(DISTINCT user_id) FROM events), 1) as adoption_rate
+      FROM events
+      WHERE feature_name != ''
+      GROUP BY feature_name
+      ORDER BY usage_count DESC
+
+  - description: "Daily active users trend (last 30 days)"
+    query: |
+      SELECT
+        DATE(event_timestamp) as date,
+        COUNT(DISTINCT user_id) as dau
+      FROM events
+      WHERE event_timestamp >= CURRENT_DATE - INTERVAL '30 days'
+      GROUP BY DATE(event_timestamp)
+      ORDER BY date
+
+  - description: "User activity by plan type"
+    query: |
+      SELECT
+        u.plan_type,
+        COUNT(e.event_id) as total_events,
+        COUNT(DISTINCT e.user_id) as active_users,
+        ROUND(COUNT(e.event_id) * 1.0 / COUNT(DISTINCT e.user_id), 1) as events_per_user
+      FROM events e
+      JOIN users u ON e.user_id = u.user_id
+      GROUP BY u.plan_type
+      ORDER BY events_per_user DESC
+
+  - description: "Feature adoption by industry"
+    query: |
+      SELECT
+        u.industry,
+        e.feature_name,
+        COUNT(DISTINCT e.user_id) as users,
+        COUNT(e.event_id) as usage_count
+      FROM events e
+      JOIN users u ON e.user_id = u.user_id
+      WHERE e.feature_name != ''
+      GROUP BY u.industry, e.feature_name
+      ORDER BY u.industry, usage_count DESC
+
+# Statistical patterns
+validation:
+  activity_patterns:
+    - check: "events_per_user by plan_type"
+      expectation: "enterprise > pro > starter > free"
+      test: "ANOVA"
+    - check: "feature_adoption_rate by industry"
+      expectation: "saas and fintech highest"
+      test: "chi_square"
+
+  time_patterns:
+    - check: "hourly_activity"
+      expectation: "peak during business hours (9-17)"
+    - check: "weekly_pattern"
+      expectation: "lower weekend activity"
+
+# Automatic insights to generate
+auto_insights:
+  - name: "plan_activity_comparison"
+    description: "Compare activity levels across plan types"
+    dimensions: ["plan_type"]
+    measures: ["events_per_user", "feature_adoption_rate"]
+    statistical_test: true
+
+  - name: "feature_popularity"
+    description: "Identify most and least used features"
+    dimensions: ["feature_name"]
+    measures: ["usage_count", "unique_users"]
+    ranking: true
+
+  - name: "engagement_trends"
+    description: "Track DAU and feature usage over time"
+    time_series: true
+    measures: ["daily_active_users", "daily_events"]
+    trend_analysis: true
