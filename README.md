@@ -1,4 +1,4 @@
-# Claude-Analyst
+# Local-AI-Analyst
 
 📦 Public Archive - November 2025
 
@@ -294,9 +294,9 @@ Available: ['users', 'events', 'engagement']
 
 ## Support & Contributing
 
-**Issues**: Found a bug or have a feature request? [Open an issue](https://github.com/sbdk-dev/claude-analyst/issues)
+**Issues**: Found a bug or have a feature request? [Open an issue](https://github.com/sbdk-dev/local-ai-analyst/issues)
 
-**Contributing**: Pull requests welcome! Please follow existing code style.
+**Contributing**: Pull requests welcome! Please follow the existing code style.
 
 ---
 
