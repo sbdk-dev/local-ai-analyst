@@ -1,5 +1,12 @@
 # Claude-Analyst
 
+📦 Public Archive - November 2025
+
+This project is being archived as a complete reference implementation of a local-first AI-powered analytics assistant. It demonstrates best practices for MCP integration, dbt semantic bridging, and extending data pipeline infrastructure. It was built to showcase duckDB, dlt, dbt, and Ibis (Boring Semantic Layer).
+
+
+---
+
 > **AI-powered data analyst with semantic layer, statistical rigor, and natural language insights**
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
@@ -9,7 +16,7 @@
 
 **Status**: v1.0 Production Ready | Works with Claude Desktop & ChatGPT Desktop | [Quick Start →](QUICK_START.md)
 
----
+--- 
 
 ## What You Get
 
