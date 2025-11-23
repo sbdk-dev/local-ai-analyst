@@ -63,7 +63,7 @@ class QueryCache:
             "filters": json.dumps(query_info.get("filters", {}), sort_keys=True),
         }
         key_str = json.dumps(key_data, sort_keys=True)
-        return hashlib.md5(key_str.encode()).hexdigest()
+        return hashlib.sha256(key_str.encode()).hexdigest()
 
     def get(self, query_info: Dict[str, Any]) -> Optional[Dict[str, Any]]:
         """Retrieve cached result if valid"""
@@ -618,7 +618,7 @@ class QueryOptimizer:
     ):
         """Record query execution for performance learning"""
 
-        query_hash = hashlib.md5(
+        query_hash = hashlib.sha256(
             json.dumps(query_info, sort_keys=True).encode()
         ).hexdigest()
 

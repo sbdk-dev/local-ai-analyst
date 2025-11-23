@@ -3,7 +3,7 @@
 
 model:
   name: engagement
-  description: "User engagement metrics including DAU/MAU, retention, and cohort analysis"
+  description: "User engagement, retention, churn, and product stickiness metrics, including DAU/MAU, and cohort analysis. Critical for understanding active usage and product popularity."
   # This model uses both events and users tables through derived queries
 
 dimensions:
@@ -27,7 +27,7 @@ measures:
   # Core engagement metrics
   - name: dau
     type: count_distinct
-    description: "Daily Active Users"
+    description: "Daily Active Users, representing unique users engaging with the product on a given day."
     sql: |
       COUNT(DISTINCT CASE
         WHEN DATE(event_timestamp) = {metric_date}
@@ -37,7 +37,7 @@ measures:
 
   - name: wau
     type: count_distinct
-    description: "Weekly Active Users"
+    description: "Weekly Active Users, measuring unique users engaging over a seven-day period."
     sql: |
       COUNT(DISTINCT CASE
         WHEN event_timestamp >= {metric_date} - INTERVAL '6 days'
@@ -48,7 +48,7 @@ measures:
 
   - name: mau
     type: count_distinct
-    description: "Monthly Active Users"
+    description: "Monthly Active Users, tracking unique users interacting with the product within a month."
     sql: |
       COUNT(DISTINCT CASE
         WHEN event_timestamp >= DATE_TRUNC('month', {metric_date})
@@ -62,20 +62,20 @@ measures:
     type: ratio
     numerator: dau
     denominator: mau
-    description: "DAU/MAU ratio - how frequently users engage daily"
+    description: "DAU/MAU ratio - how frequently users engage daily, a key indicator for churn risk and product stickiness."
     format: percentage
 
   - name: weekly_stickiness
     type: ratio
     numerator: wau
     denominator: mau
-    description: "WAU/MAU ratio - how frequently users engage weekly"
+    description: "WAU/MAU ratio - how frequently users engage weekly, informing retention strategies and overall product popularity."
     format: percentage
 
   # Retention metrics
   - name: d1_retention
     type: custom
-    description: "Day 1 retention rate"
+    description: "Day 1 retention rate, critical for early user engagement and churn prediction"
     sql: |
       COUNT(DISTINCT CASE
         WHEN signup_cohort.signup_date = {cohort_date}
@@ -98,7 +98,7 @@ measures:
 
   - name: d30_retention
     type: custom
-    description: "Day 30 retention rate"
+    description: "Day 30 retention rate, indicating long-term user stickiness and product value."
     sql: |
       COUNT(DISTINCT CASE
         WHEN signup_cohort.signup_date = {cohort_date}

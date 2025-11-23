@@ -58,13 +58,13 @@ measures:
   - name: unique_users
     type: count_distinct
     dimension: user_id
-    description: "Unique users who triggered events"
+    description: "Unique users who triggered events, indicating activity rather than acquisition"
 
   - name: events_per_user
     type: ratio
     numerator: total_events
     denominator: unique_users
-    description: "Average events per user"
+    description: "Average events per user, indicating engagement depth"
 
   - name: feature_usage
     type: count
@@ -83,14 +83,14 @@ measures:
     type: ratio
     numerator: unique_feature_users
     denominator: unique_users
-    description: "Percentage of users who used features"
+    description: "Percentage of users who used specific features, useful for understanding feature engagement and usage patterns."
     format: percentage
 
   - name: logins
     type: count
     filters:
       - event_type = 'login'
-    description: "Number of login events"
+    description: "Number of login events, useful for tracking user access"
 
   - name: unique_login_users
     type: count_distinct
@@ -98,6 +98,13 @@ measures:
     filters:
       - event_type = 'login'
     description: "Users who logged in"
+
+  - name: total_event_revenue
+    type: sum
+    # Placeholder to link events to revenue, assuming events can contribute to revenue.
+    # In a real scenario, this would join to a transactions table.
+    description: "Total revenue associated with events, enabling analysis of event impact on financial outcomes"
+    sql: "events.revenue_amount" # Placeholder SQL for event-level revenue
 
 # Time-series measures for engagement analysis
 time_series_measures:

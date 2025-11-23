@@ -352,7 +352,7 @@ class ConversationMemory:
     ) -> str:
         """Generate unique ID for interaction"""
         content = f"{question}_{query_info.get('model', '')}_{time.time()}"
-        return hashlib.md5(content.encode()).hexdigest()[:8]
+        return hashlib.sha256(content.encode()).hexdigest()[:8]
 
     def _summarize_result(self, result: Dict[str, Any]) -> Dict[str, Any]:
         """Create a summary of query results"""

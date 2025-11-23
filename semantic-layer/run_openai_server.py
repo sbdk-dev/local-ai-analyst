@@ -297,9 +297,13 @@ if __name__ == "__main__":
     print("🔌 For ChatGPT Desktop: Configure custom action to http://localhost:8000")
     print("\n" + "="*60 + "\n")
 
+    # Make host configurable via environment variable for safer defaults
+    host = os.getenv("OPENAI_SERVER_HOST", "127.0.0.1")
+    port = int(os.getenv("OPENAI_SERVER_PORT", "8000"))
+
     uvicorn.run(
         app,
-        host="0.0.0.0",
-        port=8000,
+        host=host,
+        port=port,
         log_level="info",
     )
